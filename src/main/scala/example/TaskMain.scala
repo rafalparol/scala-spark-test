@@ -1,8 +1,12 @@
 package example
 
-import org.apache.spark.sql.{SparkSession}
+import example.Task1RepartitioningApproach.transformationTask1WithRepartitioningApproach
+import example.Task1SimpleApproach.transformationTask1WithSimpleApproach
+import example.Task2RepartitioningApproach.transformationTask2WithRepartitioningApproach
+import example.Task2SimpleApproach.transformationTask2WithSimpleApproach
+import org.apache.spark.sql.SparkSession
 
-object Task {
+object TaskMain {
   def main(args: Array[String]): Unit = {
     // CREATE SPARK SESSION
 
@@ -26,23 +30,23 @@ object Task {
     // completedOrdersDF.printSchema()
     // notCompletedOrdersDF.printSchema()
 
-    //  val transformationTask1WithSimpleApproachDF = transformationTask1WithSimpleApproach(
-    //    notCompletedOrdersDF,
-    //    completedOrdersDF,
-    //    notCompletedPaymentsDF,
-    //    completedPaymentsDF,
-    //    usersDF,
-    //    productsDF,
-    //    categoriesDF
-    //  )
+    val transformationTask1WithSimpleApproachDF = transformationTask1WithSimpleApproach(
+      spark,
+      notCompletedOrdersDF,
+      completedOrdersDF,
+      notCompletedPaymentsDF,
+      completedPaymentsDF,
+      usersDF,
+      productsDF,
+      categoriesDF
+    )
 
-    // Tests.
+    transformationTask1WithSimpleApproachDF.show()
 
     // Approach with repartitioning.
 
-    // Tests.
-
     //  val transformationTask1WithRepartitioningApproachDF = transformationTask1WithRepartitioningApproach(
+    //    spark,
     //    notCompletedOrdersDF,
     //    completedOrdersDF,
     //    notCompletedPaymentsDF,
@@ -54,11 +58,10 @@ object Task {
 
     // TASK 2
 
-    // QUERY EXAMPLE: Find spendings (both already paid or not) of different users on products from different categories.
-
     // Simple approach
 
     //  val transformationTask2WithSimpleApproachDF = transformationTask2WithSimpleApproach(
+    //    spark,
     //    notCompletedOrdersDF,
     //    completedOrdersDF,
     //    notCompletedPaymentsDF,
@@ -67,12 +70,11 @@ object Task {
     //    productsDF,
     //    categoriesDF
     //  )
-
-    // Tests.
 
     // Approach with repartitioning.
 
     //  val transformationTask2WithRepartitioningApproachDF = transformationTask2WithRepartitioningApproach(
+    //    spark,
     //    notCompletedOrdersDF,
     //    completedOrdersDF,
     //    notCompletedPaymentsDF,
@@ -81,8 +83,6 @@ object Task {
     //    productsDF,
     //    categoriesDF
     //  )
-
-    // Tests.
 
     spark.stop()
   }
