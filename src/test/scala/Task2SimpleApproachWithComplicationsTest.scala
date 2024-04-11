@@ -1,4 +1,3 @@
-import example.Task2SimpleApproach.transformationTask2WithSimpleApproach
 import example.Task2SimpleApproachWithComplications.transformationTask2WithSimpleApproachWithComplications
 import example.{TaskData, TaskInitialization}
 import org.scalatest.flatspec.AnyFlatSpec

@@ -18,13 +18,13 @@ object TaskMain {
 
     // STATIC
 
-    val usersDF = TaskData.createSampleUsersDF(spark)
-    val productsDF = TaskData.createSampleProductsDF(spark)
-    val categoriesDF = TaskData.createSampleCategoriesDF(spark)
-    val completedPaymentsDF = TaskData.createSampleCompletedPaymentsDF(spark)
-    val notCompletedPaymentsDF = TaskData.createSampleNotCompletedPaymentsDF(spark)
-    val completedOrdersDF = TaskData.createSampleCompletedOrdersDF(spark)
-    val notCompletedOrdersDF = TaskData.createSampleNotCompletedOrdersDF(spark)
+    //  val usersDF = TaskData.createSampleUsersDF(spark)
+    //  val productsDF = TaskData.createSampleProductsDF(spark)
+    //  val categoriesDF = TaskData.createSampleCategoriesDF(spark)
+    //  val completedPaymentsDF = TaskData.createSampleCompletedPaymentsDF(spark)
+    //  val notCompletedPaymentsDF = TaskData.createSampleNotCompletedPaymentsDF(spark)
+    //  val completedOrdersDF = TaskData.createSampleCompletedOrdersDF(spark)
+    //  val notCompletedOrdersDF = TaskData.createSampleNotCompletedOrdersDF(spark)
 
     // DYNAMIC
 
@@ -134,7 +134,7 @@ object TaskMain {
 
     // transformationTask2WithSimpleApproachWithComplicationsDF.show()
 
-    // spark.stop()
+    spark.stop()
   }
 }
 
