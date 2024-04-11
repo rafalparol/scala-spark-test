@@ -14,13 +14,19 @@ object TaskMain {
 
     // CREATE TEST DATAFRAMES
 
-    val usersDF = TaskData.createSampleUsersDF(spark)
-    val productsDF = TaskData.createSampleProductsDF(spark)
-    val categoriesDF = TaskData.createSampleCategoriesDF(spark)
-    val completedPaymentsDF = TaskData.createSampleCompletedPaymentsDF(spark)
-    val notCompletedPaymentsDF = TaskData.createSampleNotCompletedPaymentsDF(spark)
-    val completedOrdersDF = TaskData.createSampleCompletedOrdersDF(spark)
-    val notCompletedOrdersDF = TaskData.createSampleNotCompletedOrdersDF(spark)
+    //  val usersDF = TaskData.createSampleUsersDF(spark)
+    //  val productsDF = TaskData.createSampleProductsDF(spark)
+    //  val categoriesDF = TaskData.createSampleCategoriesDF(spark)
+    //  val completedPaymentsDF = TaskData.createSampleCompletedPaymentsDF(spark)
+    //  val notCompletedPaymentsDF = TaskData.createSampleNotCompletedPaymentsDF(spark)
+    //  val completedOrdersDF = TaskData.createSampleCompletedOrdersDF(spark)
+    //  val notCompletedOrdersDF = TaskData.createSampleNotCompletedOrdersDF(spark)
+
+    val usersDF = TaskData.createDynamicallyGeneratedSampleUsersDF(spark)
+    val productsDF = TaskData.createDynamicallyGeneratedSampleProductsDF(spark)
+    val categoriesDF = TaskData.createDynamicallyGeneratedSampleCategoriesDF(spark)
+    val completedOrdersDF = TaskData.createDynamicallyGeneratedSampleCompletedOrdersDF(spark)
+    val notCompletedOrdersDF = TaskData.createDynamicallyGeneratedSampleNotCompletedOrdersDF(spark)
 
     // usersDF.printSchema()
     // productsDF.printSchema()
@@ -30,18 +36,18 @@ object TaskMain {
     // completedOrdersDF.printSchema()
     // notCompletedOrdersDF.printSchema()
 
-    val transformationTask1WithSimpleApproachDF = transformationTask1WithSimpleApproach(
-      spark,
-      notCompletedOrdersDF,
-      completedOrdersDF,
-      notCompletedPaymentsDF,
-      completedPaymentsDF,
-      usersDF,
-      productsDF,
-      categoriesDF
-    )
+    //  val transformationTask1WithSimpleApproachDF = transformationTask1WithSimpleApproach(
+    //    spark,
+    //    notCompletedOrdersDF,
+    //    completedOrdersDF,
+    //    notCompletedPaymentsDF,
+    //    completedPaymentsDF,
+    //    usersDF,
+    //    productsDF,
+    //    categoriesDF
+    //  )
 
-    transformationTask1WithSimpleApproachDF.show()
+    // transformationTask1WithSimpleApproachDF.show()
 
     // Approach with repartitioning.
 
@@ -56,6 +62,8 @@ object TaskMain {
     //    categoriesDF
     //  )
 
+    // transformationTask1WithRepartitioningApproachDF.show()
+
     // TASK 2
 
     // Simple approach
@@ -64,12 +72,14 @@ object TaskMain {
     //    spark,
     //    notCompletedOrdersDF,
     //    completedOrdersDF,
-    //    notCompletedPaymentsDF,
-    //    completedPaymentsDF,
+    //    null,
+    //    null,
     //    usersDF,
     //    productsDF,
     //    categoriesDF
     //  )
+    //
+    //  transformationTask2WithSimpleApproachDF.show()
 
     // Approach with repartitioning.
 
@@ -77,14 +87,16 @@ object TaskMain {
     //    spark,
     //    notCompletedOrdersDF,
     //    completedOrdersDF,
-    //    notCompletedPaymentsDF,
-    //    completedPaymentsDF,
+    //    null,
+    //    null,
     //    usersDF,
     //    productsDF,
     //    categoriesDF
     //  )
+    //
+    //  transformationTask2WithRepartitioningApproachDF.show()
 
-    spark.stop()
+    // spark.stop()
   }
 }
 

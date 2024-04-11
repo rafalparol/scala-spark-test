@@ -3,7 +3,56 @@ package example
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 object TaskData {
-  // TEST DATA METHODS
+  val COMPLETED_ORDERS_COUNT = 50000
+  val NOT_COMPLETED_ORDERS_COUNT = 50000
+  val USERS_COUNT = 10000
+  val INSTANCES_COUNT = 5
+  val COUNTRIES_COUNT = 10
+  val MANUFACTURERS_COUNT = 20
+  val PRODUCTS_COUNT = 1000
+  val CATEGORIES_COUNT = 100
+
+  val PRICE_INTERVAL = 100
+  val MAX_PRICE = 500
+
+  val WEIGHT_INTERVAL = 20
+  val MAX_WEIGHT = 100
+
+  val MAX_DAYS = 28
+
+  // DYNAMICALLY GENERATED
+
+  def createDynamicallyGeneratedSampleUser(id: Int): (String, String, String, String, String, String, String) =
+    (s"user-${id}", s"FirstName-${id}", s"LastName-${id}", s"Country-${id % COUNTRIES_COUNT + 1}", s"City-${id}", s"PostalCode-${id}", s"Address-${id}")
+
+  def createDynamicallyGeneratedSampleUsers(count: Int): Seq[(String, String, String, String, String, String, String)] =
+    (1 to count).map(i => createDynamicallyGeneratedSampleUser(i)).toList
+
+  def createDynamicallyGeneratedSampleProduct(id: Int): (String, String, String, String, Double, Double, String) =
+    (s"product-${id}", s"category-${id % CATEGORIES_COUNT + 1}", s"Manufacturer-${id % MANUFACTURERS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT + 1}", id * PRICE_INTERVAL % MAX_PRICE + PRICE_INTERVAL, id * WEIGHT_INTERVAL % MAX_WEIGHT + WEIGHT_INTERVAL, s"2023-01-${id % MAX_DAYS + 1}")
+
+  def createDynamicallyGeneratedSampleProducts(count: Int): Seq[(String, String, String, String, Double, Double, String)] =
+    (1 to count).map(i => createDynamicallyGeneratedSampleProduct(i)).toList
+
+  def createDynamicallyGeneratedSampleCategory(id: Int): (String, String, String, String) =
+    (s"category-${id}", s"Name-${id}", s"Code-${id}", s"Country-${id % COUNTRIES_COUNT + 1}")
+
+  def createDynamicallyGeneratedSampleCategories(count: Int): Seq[(String, String, String, String)] =
+    (1 to count).map(i => createDynamicallyGeneratedSampleCategory(i)).toList
+
+  def createDynamicallyGeneratedSampleCompletedOrder(id: Int, price: Double, weight: Double): (String, String, String, String, String, Long, Double, Double, String, String, String) =
+    (s"order-${id}", s"payment-${id}", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), s"2023-02-${id % MAX_DAYS + 1} 00:00:00", s"2023-03-${id % MAX_DAYS + 1} 00:00:00", "COMPLETED")
+
+  def createDynamicallyGeneratedSampleNotCompletedOrder(id: Int, price: Double, weight: Double): (String, String, String, String, String, Long, Double, Double, String, String, String) =
+    (s"order-${id}", s"payment-${id}", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), s"2023-02-${id % MAX_DAYS + 1} 00:00:00", s"2023-03-${id % MAX_DAYS + 1} 00:00:00", "NOT_COMPLETED")
+
+  def createDynamicallyGeneratedSampleCompletedOrders(count: Int): Seq[(String, String, String, String, String, Long, Double, Double, String, String, String)] =
+    (1 to count).map(i => createDynamicallyGeneratedSampleCompletedOrder(i, i * PRICE_INTERVAL % MAX_PRICE + PRICE_INTERVAL, i * WEIGHT_INTERVAL % MAX_WEIGHT + WEIGHT_INTERVAL)).toList
+
+  def createDynamicallyGeneratedSampleNotCompletedOrders(count: Int): Seq[(String, String, String, String, String, Long, Double, Double, String, String, String)] =
+    (1 to count).map(i => createDynamicallyGeneratedSampleNotCompletedOrder(i, i * PRICE_INTERVAL % MAX_PRICE + PRICE_INTERVAL, i * WEIGHT_INTERVAL % MAX_WEIGHT + WEIGHT_INTERVAL)).toList
+
+  // STATICALLY GENERATED
 
   def createSampleUsers: Seq[(String, String, String, String, String, String, String)] = List(
     ("user-01", "Anne", "Anderson", "USA", "Boston", "02138", "19 Ware St, Cambridge, MA 02138, USA"),
@@ -58,6 +107,70 @@ object TaskData {
     ("payment-05", "Japan", 350.0, "2023-07-15 00:00:00", "", "NOT COMPLETED"),
     ("payment-06", "France", 200.0, "2023-07-15 00:00:00", "", "NOT COMPLETED")
   )
+
+  // CREATE DYNAMICALLY GENERATED DATAFRAMES
+
+  def createDynamicallyGeneratedSampleUsersDF(spark: SparkSession): DataFrame = {
+    spark.createDataFrame(createDynamicallyGeneratedSampleUsers(USERS_COUNT))
+      .withColumnRenamed("_1", "UserId")
+      .withColumnRenamed("_2", "FirstName")
+      .withColumnRenamed("_3", "LastName")
+      .withColumnRenamed("_4", "Country")
+      .withColumnRenamed("_5", "City")
+      .withColumnRenamed("_6", "PostalCode")
+      .withColumnRenamed("_7", "Address")
+  }
+
+  def createDynamicallyGeneratedSampleCompletedOrdersDF(spark: SparkSession): DataFrame = {
+    spark.createDataFrame(createDynamicallyGeneratedSampleCompletedOrders(COMPLETED_ORDERS_COUNT))
+      .withColumnRenamed("_1", "OrderId")
+      .withColumnRenamed("_2", "PaymentId")
+      .withColumnRenamed("_3", "UserId")
+      .withColumnRenamed("_4", "ProductId")
+      .withColumnRenamed("_5", "Country")
+      .withColumnRenamed("_6", "Count")
+      .withColumnRenamed("_7", "TotalValue")
+      .withColumnRenamed("_8", "TotalWeight")
+      .withColumnRenamed("_9", "OrderGenerationDate")
+      .withColumnRenamed("_10", "OrderCompletionDate")
+      .withColumnRenamed("_11", "Status")
+  }
+
+  def createDynamicallyGeneratedSampleNotCompletedOrdersDF(spark: SparkSession): DataFrame = {
+    spark.createDataFrame(createDynamicallyGeneratedSampleNotCompletedOrders(NOT_COMPLETED_ORDERS_COUNT))
+      .withColumnRenamed("_1", "OrderId")
+      .withColumnRenamed("_2", "PaymentId")
+      .withColumnRenamed("_3", "UserId")
+      .withColumnRenamed("_4", "ProductId")
+      .withColumnRenamed("_5", "Country")
+      .withColumnRenamed("_6", "Count")
+      .withColumnRenamed("_7", "TotalValue")
+      .withColumnRenamed("_8", "TotalWeight")
+      .withColumnRenamed("_9", "OrderGenerationDate")
+      .withColumnRenamed("_10", "OrderCompletionDate")
+      .withColumnRenamed("_11", "Status")
+  }
+
+  def createDynamicallyGeneratedSampleProductsDF(spark: SparkSession): DataFrame = {
+    spark.createDataFrame(createDynamicallyGeneratedSampleProducts(PRODUCTS_COUNT))
+      .withColumnRenamed("_1", "ProductId")
+      .withColumnRenamed("_2", "CategoryId")
+      .withColumnRenamed("_3", "Name")
+      .withColumnRenamed("_4", "Country")
+      .withColumnRenamed("_5", "Price")
+      .withColumnRenamed("_6", "Weight")
+      .withColumnRenamed("_7", "MarketEntranceDate")
+  }
+
+  def createDynamicallyGeneratedSampleCategoriesDF(spark: SparkSession): DataFrame = {
+    spark.createDataFrame(createDynamicallyGeneratedSampleCategories(CATEGORIES_COUNT))
+      .withColumnRenamed("_1", "CategoryId")
+      .withColumnRenamed("_2", "Name")
+      .withColumnRenamed("_3", "Code")
+      .withColumnRenamed("_4", "Country")
+  }
+
+  // CREATE STATICALLY GENERATED DATAFRAMES
 
   def createSampleUsersDF(spark: SparkSession): DataFrame = {
     spark.createDataFrame(createSampleUsers)

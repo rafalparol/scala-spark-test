@@ -19,8 +19,8 @@ object Task2SimpleApproach {
     val ordersDF = notCompletedOrdersDF
       .union(completedOrdersDF)
     // ordersDF.printSchema()
-    val paymentsDF = notCompletedPaymentsDF
-      .union(completedPaymentsDF)
+    // val paymentsDF = notCompletedPaymentsDF
+    //   .union(completedPaymentsDF)
     // paymentsDF.printSchema()
 
     val usersJoinedWithOrdersDF = usersDF.join(ordersDF, usersDF.col("UserId") === ordersDF.col("UserId"), "left")
