@@ -15,6 +15,7 @@ object TaskInitialization {
       .master("local[*]")
       .getOrCreate()
     ss.conf.set("spark.sql.autoBroadcastJoinThreshold", -1)
+    ss.conf.set("spark.sql.session.timeZone", "UTC")
     ss
   }
 }
