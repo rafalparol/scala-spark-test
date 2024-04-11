@@ -44,7 +44,7 @@ object TaskData {
     (s"order-$id", s"payment-$id", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), s"2023-02-${id % MAX_DAYS + 1} 00:00:00", s"2023-03-${id % MAX_DAYS + 1} 00:00:00", "COMPLETED")
 
   def createDynamicallyGeneratedSampleNotCompletedOrder(id: Int, price: Double, weight: Double): (String, String, String, String, String, Long, Double, Double, String, String, String) =
-    (s"order-$id", s"payment-$id", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), s"2023-02-${id % MAX_DAYS + 1} 00:00:00", s"2023-03-${id % MAX_DAYS + 1} 00:00:00", "NOT_COMPLETED")
+    (s"order-$id", s"payment-$id", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), s"2023-02-${id % MAX_DAYS + 1} 00:00:00", s"", "NOT_COMPLETED")
 
   def createDynamicallyGeneratedSampleCompletedOrders(count: Int): Seq[(String, String, String, String, String, Long, Double, Double, String, String, String)] =
     (1 to count).map(i => createDynamicallyGeneratedSampleCompletedOrder(i, i * PRICE_INTERVAL % MAX_PRICE + PRICE_INTERVAL, i * WEIGHT_INTERVAL % MAX_WEIGHT + WEIGHT_INTERVAL)).toList
