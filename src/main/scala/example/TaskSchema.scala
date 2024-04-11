@@ -11,14 +11,14 @@ object TaskSchema {
   // 3. Users pay for the orders by making payments.
   // 4. Products belong to categories.
 
-  val categorySchema = StructType(Array(
-    StructField("CategoryId", LongType),          // Category ID
-    StructField("Name", StringType),              // Name of the category
-    StructField("Code", StringType),              // Code of the category
-    StructField("Country", StringType)            // Where this category is from
+  val categorySchema: StructType = StructType(Array(
+    StructField("CategoryId", LongType), // Category ID
+    StructField("Name", StringType), // Name of the category
+    StructField("Code", StringType), // Code of the category
+    StructField("Country", StringType) // Where this category is from
   ))
 
-  val productSchema = StructType(Array(
+  val productSchema: StructType = StructType(Array(
     StructField("ProductId", LongType),           // Product ID
     StructField("Name", StringType),              // Name of the product
     StructField("Country", StringType),           // Where it is available
@@ -27,7 +27,7 @@ object TaskSchema {
     StructField("MarketEntranceDate", StringType) // When it entered the market
   ))
 
-  val orderSchema = StructType(Array(
+  val orderSchema: StructType = StructType(Array(
     StructField("OrderId", LongType),               // Order ID
     StructField("PaymentId", LongType),             // Payment ID
     StructField("UserId", LongType),                // User ID
@@ -41,7 +41,7 @@ object TaskSchema {
     StructField("Status", StringType)               // COMPLETED or NOT COMPLETED
   ))
 
-  val userSchema = StructType(Array(
+  val userSchema: StructType = StructType(Array(
     StructField("UserId", LongType),        // User ID
     StructField("FirstName", StringType),   // First name of the user
     StructField("LastName", StringType),    // Last name of the user
@@ -51,7 +51,7 @@ object TaskSchema {
     StructField("Address", StringType)      // Her / his full address
   ))
 
-  val paymentSchema = StructType(Array(
+  val paymentSchema: StructType = StructType(Array(
     StructField("PaymentId", LongType),               // Payment ID
     StructField("Country", StringType),               // Where the payment belongs to
     StructField("TotalValue", DoubleType),            // Total amount to pay

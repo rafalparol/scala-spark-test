@@ -23,28 +23,28 @@ object TaskData {
   // DYNAMICALLY GENERATED
 
   def createDynamicallyGeneratedSampleUser(id: Int): (String, String, String, String, String, String, String) =
-    (s"user-${id}", s"FirstName-${id}", s"LastName-${id}", s"Country-${id % COUNTRIES_COUNT + 1}", s"City-${id}", s"PostalCode-${id}", s"Address-${id}")
+    (s"user-$id", s"FirstName-$id", s"LastName-$id", s"Country-${id % COUNTRIES_COUNT + 1}", s"City-$id", s"PostalCode-$id", s"Address-$id")
 
   def createDynamicallyGeneratedSampleUsers(count: Int): Seq[(String, String, String, String, String, String, String)] =
     (1 to count).map(i => createDynamicallyGeneratedSampleUser(i)).toList
 
   def createDynamicallyGeneratedSampleProduct(id: Int): (String, String, String, String, Double, Double, String) =
-    (s"product-${id}", s"category-${id % CATEGORIES_COUNT + 1}", s"Manufacturer-${id % MANUFACTURERS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT + 1}", id * PRICE_INTERVAL % MAX_PRICE + PRICE_INTERVAL, id * WEIGHT_INTERVAL % MAX_WEIGHT + WEIGHT_INTERVAL, s"2023-01-${id % MAX_DAYS + 1}")
+    (s"product-$id", s"category-${id % CATEGORIES_COUNT + 1}", s"Manufacturer-${id % MANUFACTURERS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT + 1}", id * PRICE_INTERVAL % MAX_PRICE + PRICE_INTERVAL, id * WEIGHT_INTERVAL % MAX_WEIGHT + WEIGHT_INTERVAL, s"2023-01-${id % MAX_DAYS + 1}")
 
   def createDynamicallyGeneratedSampleProducts(count: Int): Seq[(String, String, String, String, Double, Double, String)] =
     (1 to count).map(i => createDynamicallyGeneratedSampleProduct(i)).toList
 
   def createDynamicallyGeneratedSampleCategory(id: Int): (String, String, String, String) =
-    (s"category-${id}", s"Name-${id}", s"Code-${id}", s"Country-${id % COUNTRIES_COUNT + 1}")
+    (s"category-$id", s"Name-$id", s"Code-$id", s"Country-${id % COUNTRIES_COUNT + 1}")
 
   def createDynamicallyGeneratedSampleCategories(count: Int): Seq[(String, String, String, String)] =
     (1 to count).map(i => createDynamicallyGeneratedSampleCategory(i)).toList
 
   def createDynamicallyGeneratedSampleCompletedOrder(id: Int, price: Double, weight: Double): (String, String, String, String, String, Long, Double, Double, String, String, String) =
-    (s"order-${id}", s"payment-${id}", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), s"2023-02-${id % MAX_DAYS + 1} 00:00:00", s"2023-03-${id % MAX_DAYS + 1} 00:00:00", "COMPLETED")
+    (s"order-$id", s"payment-$id", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), s"2023-02-${id % MAX_DAYS + 1} 00:00:00", s"2023-03-${id % MAX_DAYS + 1} 00:00:00", "COMPLETED")
 
   def createDynamicallyGeneratedSampleNotCompletedOrder(id: Int, price: Double, weight: Double): (String, String, String, String, String, Long, Double, Double, String, String, String) =
-    (s"order-${id}", s"payment-${id}", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), s"2023-02-${id % MAX_DAYS + 1} 00:00:00", s"2023-03-${id % MAX_DAYS + 1} 00:00:00", "NOT_COMPLETED")
+    (s"order-$id", s"payment-$id", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), s"2023-02-${id % MAX_DAYS + 1} 00:00:00", s"2023-03-${id % MAX_DAYS + 1} 00:00:00", "NOT_COMPLETED")
 
   def createDynamicallyGeneratedSampleCompletedOrders(count: Int): Seq[(String, String, String, String, String, Long, Double, Double, String, String, String)] =
     (1 to count).map(i => createDynamicallyGeneratedSampleCompletedOrder(i, i * PRICE_INTERVAL % MAX_PRICE + PRICE_INTERVAL, i * WEIGHT_INTERVAL % MAX_WEIGHT + WEIGHT_INTERVAL)).toList
