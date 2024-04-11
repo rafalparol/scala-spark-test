@@ -23,9 +23,10 @@ object TaskData {
   // DYNAMICALLY GENERATED
 
   // TODO: The logic of generating data dynamically could be improved to maintain the consistency between products, countries, users, categories etc.
-  // TODO: Not all products exist in all countries, users come from different countries but they do not change their place of residence, etc.
-  // TODO: It would probably be better to rely generating all IDs using predefined existing sets of products, categories, users and relationships between them.
-  // TODO: However, it should not matter too much for performance testing.
+  //       Not all products exist in all countries, users come from different countries but they do not change their place of residence, etc.
+  //       It would probably be better to rely on generating all IDs using predefined existing sets of products, categories, users and relationships between them.
+  //       However, it should not matter too much for performance testing.
+  //       The code may contain some bugs.
 
   def createDynamicallyGeneratedSampleUser(id: Int): (String, String, String, String, String, String, String) =
     (s"user-$id", s"FirstName-$id", s"LastName-$id", s"Country-${id % COUNTRIES_COUNT + 1}", s"City-$id", s"PostalCode-$id", s"Address-$id")
@@ -34,7 +35,7 @@ object TaskData {
     (1 to count).map(i => createDynamicallyGeneratedSampleUser(i)).toList
 
   def createDynamicallyGeneratedSampleProduct(id: Int): (String, String, String, String, Double, Double, String) =
-    (s"product-$id", s"category-${id % CATEGORIES_COUNT + 1}", s"Manufacturer-${id % MANUFACTURERS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT + 1}", id * PRICE_INTERVAL % MAX_PRICE + PRICE_INTERVAL, id * WEIGHT_INTERVAL % MAX_WEIGHT + WEIGHT_INTERVAL, s"2023-01-${id % MAX_DAYS + 1}")
+    (s"product-$id", s"category-${id % CATEGORIES_COUNT + 1}", s"Manufacturer-${id % MANUFACTURERS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT + 1}", id * PRICE_INTERVAL % MAX_PRICE + PRICE_INTERVAL, id * WEIGHT_INTERVAL % MAX_WEIGHT + WEIGHT_INTERVAL, f"2023-01-${id % MAX_DAYS + 1}%02d")
 
   def createDynamicallyGeneratedSampleProducts(count: Int): Seq[(String, String, String, String, Double, Double, String)] =
     (1 to count).map(i => createDynamicallyGeneratedSampleProduct(i)).toList
@@ -46,10 +47,10 @@ object TaskData {
     (1 to count).map(i => createDynamicallyGeneratedSampleCategory(i)).toList
 
   def createDynamicallyGeneratedSampleCompletedOrder(id: Int, price: Double, weight: Double): (String, String, String, String, String, Long, Double, Double, String, String, String) =
-    (s"order-$id", s"payment-$id", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), s"2023-02-${id % MAX_DAYS + 1} 00:00:00", s"2023-03-${id % MAX_DAYS + 1} 00:00:00", "COMPLETED")
+    (s"order-$id", s"payment-$id", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), f"2023-02-${id % MAX_DAYS + 1}%02d 00:00:00", f"2023-03-${id % MAX_DAYS + 1}%02d 00:00:00", "COMPLETED")
 
   def createDynamicallyGeneratedSampleNotCompletedOrder(id: Int, price: Double, weight: Double): (String, String, String, String, String, Long, Double, Double, String, String, String) =
-    (s"order-$id", s"payment-$id", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), s"2023-02-${id % MAX_DAYS + 1} 00:00:00", s"", "NOT_COMPLETED")
+    (s"order-$id", s"payment-$id", s"user-${id % USERS_COUNT + 1}", s"product-${id % PRODUCTS_COUNT + 1}", s"Country-${id % COUNTRIES_COUNT}", id % INSTANCES_COUNT + 1, price * (id % INSTANCES_COUNT + 1), weight * (id % INSTANCES_COUNT + 1), f"2023-02-${id % MAX_DAYS + 1}%02d 00:00:00", s"", "NOT_COMPLETED")
 
   def createDynamicallyGeneratedSampleCompletedOrders(count: Int): Seq[(String, String, String, String, String, Long, Double, Double, String, String, String)] =
     (1 to count).map(i => createDynamicallyGeneratedSampleCompletedOrder(i, i * PRICE_INTERVAL % MAX_PRICE + PRICE_INTERVAL, i * WEIGHT_INTERVAL % MAX_WEIGHT + WEIGHT_INTERVAL)).toList
