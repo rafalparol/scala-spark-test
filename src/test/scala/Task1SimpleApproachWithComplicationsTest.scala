@@ -1,4 +1,3 @@
-import example.Task1SimpleApproach.transformationTask1WithSimpleApproach
 import example.Task1SimpleApproachWithComplications.transformationTask1WithSimpleApproachWithComplications
 import example.{TaskData, TaskInitialization}
 import org.scalatest.flatspec.AnyFlatSpec
@@ -25,8 +24,6 @@ class Task1SimpleApproachWithComplicationsTest extends AnyFlatSpec {
       spark,
       notCompletedOrdersDF,
       completedOrdersDF,
-      notCompletedPaymentsDF,
-      completedPaymentsDF,
       usersDF,
       productsDF,
       categoriesDF,
@@ -70,6 +67,6 @@ class Task1SimpleApproachWithComplicationsTest extends AnyFlatSpec {
 
     // CLEANUP
 
-    // spark.stop()
+    spark.stop()
   }
 }

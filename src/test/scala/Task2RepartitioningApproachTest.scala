@@ -21,11 +21,8 @@ class Task2RepartitioningApproachTest extends AnyFlatSpec {
     // RUN
 
     val transformationTask2WithRepartitioningApproachDF = transformationTask2WithRepartitioningApproach(
-      spark,
       notCompletedOrdersDF,
       completedOrdersDF,
-      notCompletedPaymentsDF,
-      completedPaymentsDF,
       usersDF,
       productsDF,
       categoriesDF
@@ -67,6 +64,6 @@ class Task2RepartitioningApproachTest extends AnyFlatSpec {
 
     // CLEANUP
 
-    // spark.stop()
+    spark.stop()
   }
 }

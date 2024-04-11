@@ -24,8 +24,6 @@ class Task1RepartitioningApproachTest extends AnyFlatSpec {
       spark,
       notCompletedOrdersDF,
       completedOrdersDF,
-      notCompletedPaymentsDF,
-      completedPaymentsDF,
       usersDF,
       productsDF,
       categoriesDF
@@ -67,6 +65,6 @@ class Task1RepartitioningApproachTest extends AnyFlatSpec {
 
     // CLEANUP
 
-    // spark.stop()
+    spark.stop()
   }
 }

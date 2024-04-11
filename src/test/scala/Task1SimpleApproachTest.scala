@@ -24,8 +24,6 @@ class Task1SimpleApproachTest extends AnyFlatSpec {
       spark,
       notCompletedOrdersDF,
       completedOrdersDF,
-      notCompletedPaymentsDF,
-      completedPaymentsDF,
       usersDF,
       productsDF,
       categoriesDF
@@ -67,6 +65,6 @@ class Task1SimpleApproachTest extends AnyFlatSpec {
 
     // CLEANUP
 
-    // spark.stop()
+    spark.stop()
   }
 }

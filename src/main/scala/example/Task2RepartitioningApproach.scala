@@ -1,45 +1,36 @@
 package example
 
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.{asc, col, desc, sum}
 
 object Task2RepartitioningApproach {
   def transformationTask2WithRepartitioningApproach(
-    spark: SparkSession,
     notCompletedOrdersDF: DataFrame,
     completedOrdersDF: DataFrame,
-    notCompletedPaymentsDF: DataFrame,
-    completedPaymentsDF: DataFrame,
     usersDF: DataFrame,
     productsDF: DataFrame,
     categoriesDF: DataFrame
   ): DataFrame = {
     val preprocessedNotCompletedOrdersDF = notCompletedOrdersDF
       .repartition(col("UserId"))
-    // .select(col("OrderId"), col("TotalValue"), col("UserId"), col("ProductId"))
+
     val preprocessedCompletedOrdersDF = completedOrdersDF
       .repartition(col("UserId"))
-    // .select(col("OrderId"), col("TotalValue"), col("UserId"), col("ProductId"))
+
     val preprocessedUsersDF = usersDF
       .repartition(col("UserId"))
-    // .select(col("UserId"))
+
     val preprocessedProductsDF = productsDF
       .repartition(col("CategoryId"))
-    // .select(col("ProductId"), col("CategoryId"))
+
     val preprocessedCategoriesDF = categoriesDF
       .repartition(col("CategoryId"))
-    // .select(col("CategoryId"))
 
     val preprocessedOrdersDF = preprocessedNotCompletedOrdersDF.union(preprocessedCompletedOrdersDF)
-    // preprocessedOrdersDF.printSchema()
 
     val usersJoinedWithOrdersDF = preprocessedUsersDF.join(preprocessedOrdersDF, preprocessedUsersDF.col("UserId") === preprocessedOrdersDF.col("UserId"), "left")
-    // usersJoinedWithOrdersDF.printSchema()
     val productsJoinedWithCategoriesDF = preprocessedProductsDF.join(preprocessedCategoriesDF, preprocessedProductsDF.col("CategoryId") === preprocessedCategoriesDF.col("CategoryId"), "left")
-    // productsJoinedCategoriesDF.printSchema()
-
     val usersJoinedWithOrdersProductsAndCategoriesDF = usersJoinedWithOrdersDF.join(productsJoinedWithCategoriesDF, preprocessedOrdersDF.col("ProductId") === preprocessedProductsDF.col("ProductId"), "left")
-    // usersJoinedWithOrdersProductsAndCategoriesDF.printSchema()
 
     val groupedByUsersAndCategoriesDF = usersJoinedWithOrdersProductsAndCategoriesDF
       .groupBy(
@@ -88,31 +79,6 @@ object Task2RepartitioningApproach {
     //                      +- Sort [CategoryId#148 ASC NULLS FIRST], false, 0
     //                         +- Exchange hashpartitioning(CategoryId#148, 200), REPARTITION_BY_COL, [plan_id=70] // REPARTITION CATEGORIES BY CATEGORY ID
     //                            +- LocalTableScan [CategoryId#148] // LOAD CATEGORIES
-
-    // WITHOUT "COMPLICATIONS"
-    // PERFORMANCE TEST
-
-    //  val COMPLETED_ORDERS_COUNT = 50000
-    //  val NOT_COMPLETED_ORDERS_COUNT = 50000
-    //  val USERS_COUNT = 10000
-    //  val INSTANCES_COUNT = 5
-    //  val COUNTRIES_COUNT = 10
-    //  val MANUFACTURERS_COUNT = 20
-    //  val PRODUCTS_COUNT = 1000
-    //  val CATEGORIES_COUNT = 100
-    //
-    //  val PRICE_INTERVAL = 100
-    //  val MAX_PRICE = 500
-    //
-    //  val WEIGHT_INTERVAL = 20
-    //  val MAX_WEIGHT = 100
-    //
-    //  val MAX_DAYS = 28
-
-    // Around 6s, the effort is moved from the end to the beginning of computations. Repartitioning is approximately as costly as a shuffle.
-    // For a bigger number of joins using the same partitioning columns it can pays off - it will be done once at the beginning.
-
-    // groupedByUsersAndCategoriesDF.show()
 
     groupedByUsersAndCategoriesDF
   }

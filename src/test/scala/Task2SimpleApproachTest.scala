@@ -21,11 +21,8 @@ class Task2SimpleApproachTest extends AnyFlatSpec {
     // RUN
 
     val transformationTask2WithSimpleApproachDF = transformationTask2WithSimpleApproach(
-      spark,
       notCompletedOrdersDF,
       completedOrdersDF,
-      notCompletedPaymentsDF,
-      completedPaymentsDF,
       usersDF,
       productsDF,
       categoriesDF
@@ -67,6 +64,6 @@ class Task2SimpleApproachTest extends AnyFlatSpec {
 
     // CLEANUP
 
-    // spark.stop()
+    spark.stop()
   }
 }

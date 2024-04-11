@@ -10,8 +10,6 @@ object Task1RepartitioningApproach {
       spark: SparkSession,
       notCompletedOrdersDF: DataFrame,
       completedOrdersDF: DataFrame,
-      notCompletedPaymentsDF: DataFrame,
-      completedPaymentsDF: DataFrame,
       usersDF: DataFrame,
       productsDF: DataFrame,
       categoriesDF: DataFrame
@@ -25,14 +23,7 @@ object Task1RepartitioningApproach {
     categoriesDF
       .repartition(col("CategoryId"))
       .createOrReplaceTempView("categories")
-//  completedPaymentsDF
-//    .createOrReplaceTempView("completed_payments")
-//  notCompletedPaymentsDF
-//    .createOrReplaceTempView("not_completed_payments")
-//  completedOrdersDF
-//    .createOrReplaceTempView("completed_orders")
-//  notCompletedOrdersDF
-//    .createOrReplaceTempView("not_completed_orders")
+
     completedOrdersDF
       .repartition(col("UserId"))
       .union(notCompletedOrdersDF
@@ -77,8 +68,6 @@ object Task1RepartitioningApproach {
     //            +- Sort [CategoryId#148 ASC NULLS FIRST], false, 0
     //            +- Exchange hashpartitioning(CategoryId#148, 200), REPARTITION_BY_COL, [plan_id=84]
     //            +- LocalTableScan [CategoryId#148]
-
-    // groupedByUsersAndCategoriesDF.show()
 
     groupedByUsersAndCategoriesDF
   }

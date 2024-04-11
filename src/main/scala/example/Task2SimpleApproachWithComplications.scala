@@ -8,11 +8,8 @@ object Task2SimpleApproachWithComplications {
   //        Do not consider orders older than a specific day. Each user ID should be accompanied by first name and last name in uppercase.
 
   def transformationTask2WithSimpleApproachWithComplications(
-    spark: SparkSession,
     notCompletedOrdersDF: DataFrame,
     completedOrdersDF: DataFrame,
-    notCompletedPaymentsDF: DataFrame,
-    completedPaymentsDF: DataFrame,
     usersDF: DataFrame,
     productsDF: DataFrame,
     categoriesDF: DataFrame,
@@ -20,10 +17,6 @@ object Task2SimpleApproachWithComplications {
   ): DataFrame = {
     val ordersDF = notCompletedOrdersDF
       .union(completedOrdersDF)
-    // ordersDF.printSchema()
-    // val paymentsDF = notCompletedPaymentsDF
-    //   .union(completedPaymentsDF)
-    // paymentsDF.printSchema()
 
     val modifiedUsersDF = usersDF
       .withColumn("FullNameInUpperCase", concat(upper(usersDF.col("FirstName")), lit(" "), upper(usersDF.col("LastName"))))
@@ -33,11 +26,8 @@ object Task2SimpleApproachWithComplications {
       .filter(col("ParsedOrderGenerationDate") > startDate)
 
     val usersJoinedWithOrdersDF = modifiedUsersDF.join(modifiedOrdersDF, modifiedUsersDF.col("UserId") === modifiedOrdersDF.col("UserId"), "left")
-    // usersJoinedWithOrdersDF.printSchema()
     val usersJoinedWithOrdersAndProductsDF = usersJoinedWithOrdersDF.join(productsDF, modifiedOrdersDF.col("ProductId") === productsDF.col("ProductId"), "left")
-    // usersJoinedWithOrdersAndProductsDF.printSchema()
     val usersJoinedWithOrdersProductsAndCategoriesDF = usersJoinedWithOrdersAndProductsDF.join(categoriesDF, productsDF.col("CategoryId") === categoriesDF.col("CategoryId"), "left")
-    // usersJoinedWithOrdersProductsAndCategoriesDF.printSchema()
 
     val groupedByUsersAndCategoriesDF = usersJoinedWithOrdersProductsAndCategoriesDF
       .groupBy(
@@ -84,8 +74,6 @@ object Task2SimpleApproachWithComplications {
     //            +- Sort [CategoryId#148 ASC NULLS FIRST], false, 0
     //               +- Exchange hashpartitioning(CategoryId#148, 200), ENSURE_REQUIREMENTS, [plan_id=77]
     //                  +- LocalTableScan [CategoryId#148]
-
-    // groupedByUsersAndCategoriesDF.show()
 
     groupedByUsersAndCategoriesDF
   }

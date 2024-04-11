@@ -10,8 +10,6 @@ object Task1SimpleApproachWithComplications {
     spark: SparkSession,
     notCompletedOrdersDF: DataFrame,
     completedOrdersDF: DataFrame,
-    notCompletedPaymentsDF: DataFrame,
-    completedPaymentsDF: DataFrame,
     usersDF: DataFrame,
     productsDF: DataFrame,
     categoriesDF: DataFrame,
@@ -23,14 +21,7 @@ object Task1SimpleApproachWithComplications {
       .createOrReplaceTempView("products")
     categoriesDF
       .createOrReplaceTempView("categories")
-//  completedPaymentsDF
-//    .createOrReplaceTempView("completed_payments")
-//  notCompletedPaymentsDF
-//    .createOrReplaceTempView("not_completed_payments")
-//  completedOrdersDF
-//    .createOrReplaceTempView("completed_orders")
-//  notCompletedOrdersDF
-//    .createOrReplaceTempView("not_completed_orders")
+
     completedOrdersDF
       .union(notCompletedOrdersDF)
       .createOrReplaceTempView("orders")
@@ -71,8 +62,6 @@ object Task1SimpleApproachWithComplications {
     //              +- Sort [CategoryId#148 ASC NULLS FIRST], false, 0
     //                 +- Exchange hashpartitioning(CategoryId#148, 200), ENSURE_REQUIREMENTS, [plan_id=89]
     //                    +- LocalTableScan [CategoryId#148]
-
-    // groupedByUsersAndCategoriesDF.show()
 
     groupedByUsersAndCategoriesDF
   }
