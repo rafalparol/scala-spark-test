@@ -13,9 +13,9 @@ object TaskSchema {
 
   val categorySchema: StructType = StructType(Array(
     StructField("CategoryId", LongType), // Category ID
-    StructField("Name", StringType), // Name of the category
-    StructField("Code", StringType), // Code of the category
-    StructField("Country", StringType) // Where this category is from
+    StructField("Name", StringType),     // Name of the category
+    StructField("Code", StringType),     // Code of the category
+    StructField("Country", StringType)   // Where this category is from
   ))
 
   val productSchema: StructType = StructType(Array(

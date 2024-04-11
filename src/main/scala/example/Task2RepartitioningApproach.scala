@@ -49,9 +49,11 @@ object Task2RepartitioningApproach {
       .agg(
         sum(preprocessedOrdersDF.col("TotalValue")).as("TotalSum")
       )
-      .orderBy(asc("ConsideredUserId"), desc("ConsideredCategoryId"))
+      .orderBy(asc("ConsideredUserId"), desc("TotalSum"))
 
     // groupedByUsersAndCategoriesDF.explain()
+
+    // WITHOUT "COMPLICATIONS"
 
     //  == Physical Plan ==
     //    AdaptiveSparkPlan isFinalPlan=false
@@ -87,6 +89,7 @@ object Task2RepartitioningApproach {
     //                         +- Exchange hashpartitioning(CategoryId#148, 200), REPARTITION_BY_COL, [plan_id=70] // REPARTITION CATEGORIES BY CATEGORY ID
     //                            +- LocalTableScan [CategoryId#148] // LOAD CATEGORIES
 
+    // WITHOUT "COMPLICATIONS"
     // PERFORMANCE TEST
 
     //  val COMPLETED_ORDERS_COUNT = 50000

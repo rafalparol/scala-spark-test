@@ -38,9 +38,11 @@ object Task2SimpleApproach {
       .agg(
         sum(ordersDF.col("TotalValue")).as("TotalSum")
       )
-      .orderBy(asc("ConsideredUserId"), desc("ConsideredCategoryId"))
+      .orderBy(asc("ConsideredUserId"), desc("TotalSum"))
 
     // groupedByUsersAndCategoriesDF.explain()
+
+    // WITHOUT "COMPLICATIONS"
 
     //   PHYSICAL PLAN WITH BROADCAST JOINS (FOR SMALL DATA SETS)
     //      == Physical Plan ==
@@ -65,6 +67,8 @@ object Task2SimpleApproach {
     //                    :        +- LocalTableScan [ProductId#84, CategoryId#92] // LOAD PRODUCTS
     //                    +- BroadcastExchange HashedRelationBroadcastMode(List(input[0, string, true]),false), [plan_id=67] // BROADCAST CATEGORIES
     //                       +- LocalTableScan [CategoryId#148] // LOAD CATEGORIES
+
+    // WITHOUT "COMPLICATIONS"
 
     //   PHYSICAL PLAN WITHOUT BROADCAST JOINS (FOR LARGE / PRODUCTION DATA SETS)
     //      == Physical Plan ==
@@ -100,6 +104,7 @@ object Task2SimpleApproach {
 
     // groupedByUsersAndCategoriesDF.show()
 
+    // WITHOUT "COMPLICATIONS"
     // PERFORMANCE TEST
 
     //  val COMPLETED_ORDERS_COUNT = 50000
