@@ -100,6 +100,27 @@ object Task2SimpleApproach {
 
     // groupedByUsersAndCategoriesDF.show()
 
+    // PERFORMANCE TEST
+
+    //  val COMPLETED_ORDERS_COUNT = 50000
+    //  val NOT_COMPLETED_ORDERS_COUNT = 50000
+    //  val USERS_COUNT = 10000
+    //  val INSTANCES_COUNT = 5
+    //  val COUNTRIES_COUNT = 10
+    //  val MANUFACTURERS_COUNT = 20
+    //  val PRODUCTS_COUNT = 1000
+    //  val CATEGORIES_COUNT = 100
+    //
+    //  val PRICE_INTERVAL = 100
+    //  val MAX_PRICE = 500
+    //
+    //  val WEIGHT_INTERVAL = 20
+    //  val MAX_WEIGHT = 100
+    //
+    //  val MAX_DAYS = 28
+
+    // Around 6s, not worse than without the repartitioning.
+
     groupedByUsersAndCategoriesDF
   }
 }

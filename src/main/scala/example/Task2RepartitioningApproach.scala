@@ -87,6 +87,28 @@ object Task2RepartitioningApproach {
     //                         +- Exchange hashpartitioning(CategoryId#148, 200), REPARTITION_BY_COL, [plan_id=70] // REPARTITION CATEGORIES BY CATEGORY ID
     //                            +- LocalTableScan [CategoryId#148] // LOAD CATEGORIES
 
+    // PERFORMANCE TEST
+
+    //  val COMPLETED_ORDERS_COUNT = 50000
+    //  val NOT_COMPLETED_ORDERS_COUNT = 50000
+    //  val USERS_COUNT = 10000
+    //  val INSTANCES_COUNT = 5
+    //  val COUNTRIES_COUNT = 10
+    //  val MANUFACTURERS_COUNT = 20
+    //  val PRODUCTS_COUNT = 1000
+    //  val CATEGORIES_COUNT = 100
+    //
+    //  val PRICE_INTERVAL = 100
+    //  val MAX_PRICE = 500
+    //
+    //  val WEIGHT_INTERVAL = 20
+    //  val MAX_WEIGHT = 100
+    //
+    //  val MAX_DAYS = 28
+
+    // Around 6s, the effort is moved from the end to the beginning of computations. Repartitioning is approximately as costly as a shuffle.
+    // For a bigger number of joins using the same partitioning columns it can pays off - it will be done once at the beginning.
+
     // groupedByUsersAndCategoriesDF.show()
 
     groupedByUsersAndCategoriesDF
