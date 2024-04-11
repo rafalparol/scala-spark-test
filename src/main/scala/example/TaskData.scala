@@ -22,6 +22,11 @@ object TaskData {
 
   // DYNAMICALLY GENERATED
 
+  // TODO: The logic of generating data dynamically could be improved to maintain the consistency between products, countries, users, categories etc.
+  // TODO: Not all products exist in all countries, users come from different countries but they do not change their place of residence, etc.
+  // TODO: It would probably be better to rely generating all IDs using predefined existing sets of products, categories, users and relationships between them.
+  // TODO: However, it should not matter too much for performance testing.
+
   def createDynamicallyGeneratedSampleUser(id: Int): (String, String, String, String, String, String, String) =
     (s"user-$id", s"FirstName-$id", s"LastName-$id", s"Country-${id % COUNTRIES_COUNT + 1}", s"City-$id", s"PostalCode-$id", s"Address-$id")
 
