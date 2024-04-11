@@ -2,15 +2,26 @@ package example
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.types.{DoubleType, LongType, StringType, StructField, StructType}
+import org.apache.spark.sql.functions._
 
 object Task {
   def main(args: Array[String]): Unit = {
     // CREATE SPARK SESSION
 
-    val spark = SparkSession.builder
+    def createSparkSession: SparkSession = SparkSession.builder
       .appName("Spark Scala Task")
-      .master("local")
       .getOrCreate()
+
+    def createLocalSparkSession: SparkSession = {
+      val ss = SparkSession.builder
+        .appName("Spark Scala Task")
+        .master("local")
+        .getOrCreate()
+      ss.conf.set("spark.sql.autoBroadcastJoinThreshold", -1)
+      ss
+    }
+
+    val spark = createLocalSparkSession
 
     // SCHEMAS (FOR DOCUMENTATION PURPOSES ONLY)
 
@@ -208,27 +219,29 @@ object Task {
     // CREATE DATAFRAMES
 
     val usersDF = createSampleUsersDF
-    usersDF.printSchema()
+    // usersDF.printSchema()
 
     val productsDF = createSampleProductsDF
-    productsDF.printSchema()
+    // productsDF.printSchema()
 
     val categoriesDF = createSampleCategoriesDF
-    categoriesDF.printSchema()
+    // categoriesDF.printSchema()
 
     val completedPaymentsDF = createSampleCompletedPaymentsDF
-    completedPaymentsDF.printSchema()
+    // completedPaymentsDF.printSchema()
 
     val notCompletedPaymentsDF = createSampleNotCompletedPaymentsDF
-    notCompletedPaymentsDF.printSchema()
+    // notCompletedPaymentsDF.printSchema()
 
     val completedOrdersDF = createSampleCompletedOrdersDF
-    completedOrdersDF.printSchema()
+    // completedOrdersDF.printSchema()
 
     val notCompletedOrdersDF = createSampleNotCompletedOrdersDF
-    notCompletedOrdersDF.printSchema()
+    // notCompletedOrdersDF.printSchema()
 
     // TASK 1
+
+    // QUERY EXAMPLE: Find spendings (both already paid or not) of different users on products from different categories.
 
     // Naive approach.
 
@@ -240,17 +253,222 @@ object Task {
 
     // TASK 2
 
-    //
+    // QUERY EXAMPLE: Find spendings (both already paid or not) of different users on products from different categories.
 
-    // Naive approach
+    // Simple approach
+
+    def transformationTask2WithSimpleApproach(
+      notCompletedOrdersDF: DataFrame,
+      completedOrdersDF: DataFrame,
+      notCompletedPaymentsDF: DataFrame,
+      completedPaymentsDF: DataFrame,
+      usersDF: DataFrame,
+      productsDF: DataFrame,
+      categoriesDF: DataFrame
+    ): DataFrame = {
+      val ordersDF = notCompletedOrdersDF.union(completedOrdersDF)
+      // ordersDF.printSchema()
+      val paymentsDF = notCompletedPaymentsDF.union(completedPaymentsDF)
+      // paymentsDF.printSchema()
+
+      val usersJoinedWithOrdersDF = usersDF.join(ordersDF, usersDF.col("UserId") === ordersDF.col("UserId"), "left")
+      // usersJoinedWithOrdersDF.printSchema()
+      val usersJoinedWithOrdersAndProductsDF = usersJoinedWithOrdersDF.join(productsDF, ordersDF.col("ProductId") === productsDF.col("ProductId"), "left")
+      // usersJoinedWithOrdersAndProductsDF.printSchema()
+      val usersJoinedWithOrdersProductsAndCategoriesDF = usersJoinedWithOrdersAndProductsDF.join(categoriesDF, productsDF.col("CategoryId") === categoriesDF.col("CategoryId"), "left")
+      // usersJoinedWithOrdersProductsAndCategoriesDF.printSchema()
+
+      val groupedByUsersAndCategoriesDF = usersJoinedWithOrdersProductsAndCategoriesDF
+        .groupBy(
+          usersDF.col("UserId").as("ConsideredUserId"),
+          productsDF.col("CategoryId").as("ConsideredCategoryId")
+        )
+        .agg(
+          sum(ordersDF.col("TotalValue")).as("TotalSum")
+        )
+        .orderBy(asc("ConsideredUserId"), desc("ConsideredCategoryId"))
+
+      // groupedByUsersAndCategoriesDF.explain()
+
+      //   PHYSICAL PLAN WITH BROADCAST JOINS (FOR SMALL DATA SETS)
+      //      == Physical Plan ==
+      //        AdaptiveSparkPlan isFinalPlan=false
+      //      +- Sort [ConsideredUserId#745 ASC NULLS FIRST, ConsideredCategoryId#746 DESC NULLS LAST], true, 0 // SORTING
+      //        +- Exchange rangepartitioning(ConsideredUserId#745 ASC NULLS FIRST, ConsideredCategoryId#746 DESC NULLS LAST, 200), ENSURE_REQUIREMENTS, [plan_id=75]
+      //          +- HashAggregate(keys=[UserId#14, CategoryId#92], functions=[sum(TotalValue#524)]) // GROUPING AND GLOBAL RESULTS OF SUM
+      //            +- Exchange hashpartitioning(UserId#14, CategoryId#92, 200), ENSURE_REQUIREMENTS, [plan_id=72]
+      //              +- HashAggregate(keys=[UserId#14, CategoryId#92], functions=[partial_sum(TotalValue#524)]) // GROUPING AND PARTIAL (LOCAL) RESULTS OF SUM
+      //                +- Project [UserId#14, TotalValue#524, CategoryId#92]
+      //                  +- BroadcastHashJoin [CategoryId#92], [CategoryId#148], LeftOuter, BuildRight, false // BROADCAST JOIN OF USERS ORDERS PRODUCTS AND CATEGORIES
+      //                    :- Project [UserId#14, TotalValue#524, CategoryId#92]
+      //                    :  +- BroadcastHashJoin [ProductId#488], [ProductId#84], LeftOuter, BuildRight, false // BROADCAST JOIN OF USERS ORDERS AND PRODUCTS
+      //                    :     :- Project [UserId#14, ProductId#488, TotalValue#524]
+      //                    :     :  +- BroadcastHashJoin [UserId#14], [UserId#476], LeftOuter, BuildRight, false // BROADCAST JOIN OF USERS AND ORDERS
+      //                    :     :     :- LocalTableScan [UserId#14] // LOAD USERS
+      //                    :     :     +- BroadcastExchange HashedRelationBroadcastMode(List(input[0, string, true]),false), [plan_id=59] // BROADCAST ORDERS
+      //                    :     :        +- Union // DO UNION OF ORDERS
+      //                    :     :           :- LocalTableScan [UserId#476, ProductId#488, TotalValue#524] // LOAD ORDERS
+      //                    :     :           +- LocalTableScan [UserId#322, ProductId#334, TotalValue#370]   // LOAD ORDERS
+      //                    :     +- BroadcastExchange HashedRelationBroadcastMode(List(input[0, string, true]),false), [plan_id=63] // BROADCAST PRODUCTS
+      //                    :        +- LocalTableScan [ProductId#84, CategoryId#92] // LOAD PRODUCTS
+      //                    +- BroadcastExchange HashedRelationBroadcastMode(List(input[0, string, true]),false), [plan_id=67] // BROADCAST CATEGORIES
+      //                       +- LocalTableScan [CategoryId#148] // LOAD CATEGORIES
+
+      //   PHYSICAL PLAN WITHOUT BROADCAST JOINS (FOR LARGE / PRODUCTION DATA SETS)
+      //      == Physical Plan ==
+      //        AdaptiveSparkPlan isFinalPlan=false
+      //      +- Sort [ConsideredUserId#745 ASC NULLS FIRST, ConsideredCategoryId#746 DESC NULLS LAST], true, 0 // SORTING
+      //        +- Exchange rangepartitioning(ConsideredUserId#745 ASC NULLS FIRST, ConsideredCategoryId#746 DESC NULLS LAST, 200), ENSURE_REQUIREMENTS, [plan_id=85]
+      //          +- HashAggregate(keys=[UserId#14, CategoryId#92], functions=[sum(TotalValue#524)]) // GROUPING AND GLOBAL RESULTS OF SUM
+      //            +- HashAggregate(keys=[UserId#14, CategoryId#92], functions=[partial_sum(TotalValue#524)]) // GROUPING AND PARTIAL (LOCAL) RESULTS OF SUM
+      //              +- Project [UserId#14, TotalValue#524, CategoryId#92]
+      //                +- SortMergeJoin [CategoryId#92], [CategoryId#148], LeftOuter // JOIN OF USERS ORDERS PRODUCTS AND CATEGORIES
+      //                  :- Sort [CategoryId#92 ASC NULLS FIRST], false, 0 // PREPARATION FOR JOIN OF USERS ORDERS PRODUCTS AND CATEGORIES
+      //                  :  +- Exchange hashpartitioning(CategoryId#92, 200), ENSURE_REQUIREMENTS, [plan_id=76]
+      //                  :     +- Project [UserId#14, TotalValue#524, CategoryId#92]
+      //                  :        +- SortMergeJoin [ProductId#488], [ProductId#84], LeftOuter // JOIN OF USERS ORDERS AND PRODUCTS
+      //                  :           :- Sort [ProductId#488 ASC NULLS FIRST], false, 0 // PREPARATION FOR JOIN OF USERS ORDERS AND PRODUCTS
+      //                  :           :  +- Exchange hashpartitioning(ProductId#488, 200), ENSURE_REQUIREMENTS, [plan_id=68]
+      //                  :           :     +- Project [UserId#14, ProductId#488, TotalValue#524]
+      //                  :           :        +- SortMergeJoin [UserId#14], [UserId#476], LeftOuter // JOIN OF USERS AND ORDERS
+      //                  :           :           :- Sort [UserId#14 ASC NULLS FIRST], false, 0 // PREPARATION FOR JOIN OF USERS AND ORDERS
+      //                  :           :           :  +- Exchange hashpartitioning(UserId#14, 200), ENSURE_REQUIREMENTS, [plan_id=60]
+      //                  :           :           :     +- LocalTableScan [UserId#14] // LOAD USERS
+      //                  :           :           +- Sort [UserId#476 ASC NULLS FIRST], false, 0 // PREPARATION FOR JOIN OF USERS AND ORDERS
+      //                  :           :              +- Exchange hashpartitioning(UserId#476, 200), ENSURE_REQUIREMENTS, [plan_id=61]
+      //                  :           :                 +- Union // DO UNION OF ORDERS
+      //                  :           :                    :- LocalTableScan [UserId#476, ProductId#488, TotalValue#524] // LOAD ORDERS
+      //                  :           :                    +- LocalTableScan [UserId#322, ProductId#334, TotalValue#370] // LOAD ORDERS
+      //                  :           +- Sort [ProductId#84 ASC NULLS FIRST], false, 0 // PREPARATION FOR JOIN OF USERS ORDERS AND PRODUCTS
+      //                  :              +- Exchange hashpartitioning(ProductId#84, 200), ENSURE_REQUIREMENTS, [plan_id=69]
+      //                  :                 +- LocalTableScan [ProductId#84, CategoryId#92] // LOAD PRODUCTS
+      //                  +- Sort [CategoryId#148 ASC NULLS FIRST], false, 0 // PREPARATION FOR JOIN OF USERS ORDERS PRODUCTS AND CATEGORIES
+      //                    +- Exchange hashpartitioning(CategoryId#148, 200), ENSURE_REQUIREMENTS, [plan_id=77]
+      //                      +- LocalTableScan [CategoryId#148] // LOAD CATEGORIES
+
+      // groupedByUsersAndCategoriesDF.show()
+
+      groupedByUsersAndCategoriesDF
+    }
+
+    val transformationTask2WithSimpleApproachDF = transformationTask2WithSimpleApproach(
+      notCompletedOrdersDF,
+      completedOrdersDF,
+      notCompletedPaymentsDF,
+      completedPaymentsDF,
+      usersDF,
+      productsDF,
+      categoriesDF
+    )
 
     // Tests.
 
-    // More optimized approach.
+    // Approach with repartitioning.
+
+    def transformationTask2WithRepartitioningApproach(
+      notCompletedOrdersDF: DataFrame,
+      completedOrdersDF: DataFrame,
+      notCompletedPaymentsDF: DataFrame,
+      completedPaymentsDF: DataFrame,
+      usersDF: DataFrame,
+      productsDF: DataFrame,
+      categoriesDF: DataFrame
+    ): DataFrame = {
+      // PREPROCESSING
+
+      val preprocessedNotCompletedOrdersDF = notCompletedOrdersDF
+        .repartition(col("UserId"))
+        // .select(col("OrderId"), col("TotalValue"), col("UserId"), col("ProductId"))
+      val preprocessedCompletedOrdersDF = completedOrdersDF
+        .repartition(col("UserId"))
+        // .select(col("OrderId"), col("TotalValue"), col("UserId"), col("ProductId"))
+      val preprocessedUsersDF = usersDF
+        .repartition(col("UserId"))
+        // .select(col("UserId"))
+      val preprocessedProductsDF = productsDF
+        .repartition(col("CategoryId"))
+        // .select(col("ProductId"), col("CategoryId"))
+      val preprocessedCategoriesDF = categoriesDF
+        .repartition(col("CategoryId"))
+        // .select(col("CategoryId"))
+
+      val preprocessedOrdersDF = preprocessedNotCompletedOrdersDF.union(preprocessedCompletedOrdersDF)
+      // preprocessedOrdersDF.printSchema()
+
+      // MAIN LOGIC
+
+      val usersJoinedWithOrdersDF = preprocessedUsersDF.join(preprocessedOrdersDF, preprocessedUsersDF.col("UserId") === preprocessedOrdersDF.col("UserId"), "left")
+      // usersJoinedWithOrdersDF.printSchema()
+      val productsJoinedWithCategoriesDF = preprocessedProductsDF.join(preprocessedCategoriesDF, preprocessedProductsDF.col("CategoryId") === preprocessedCategoriesDF.col("CategoryId"), "left")
+      // productsJoinedCategoriesDF.printSchema()
+
+      val usersJoinedWithOrdersProductsAndCategoriesDF = usersJoinedWithOrdersDF.join(productsJoinedWithCategoriesDF, preprocessedOrdersDF.col("ProductId") === preprocessedProductsDF.col("ProductId"), "left")
+      // usersJoinedWithOrdersProductsAndCategoriesDF.printSchema()
+
+      val groupedByUsersAndCategoriesDF = usersJoinedWithOrdersProductsAndCategoriesDF
+        .groupBy(
+          preprocessedUsersDF.col("UserId").as("ConsideredUserId"),
+          preprocessedProductsDF.col("CategoryId").as("ConsideredCategoryId")
+        )
+        .agg(
+          sum(preprocessedOrdersDF.col("TotalValue")).as("TotalSum")
+        )
+        .orderBy(asc("ConsideredUserId"), desc("ConsideredCategoryId"))
+
+      groupedByUsersAndCategoriesDF.explain()
+
+      //    == Physical Plan ==
+      //      AdaptiveSparkPlan isFinalPlan=false
+      //    +- Sort [ConsideredUserId#711 ASC NULLS FIRST, ConsideredCategoryId#712 DESC NULLS LAST], true, 0 // SORTING
+      //      +- Exchange rangepartitioning(ConsideredUserId#711 ASC NULLS FIRST, ConsideredCategoryId#712 DESC NULLS LAST, 200), ENSURE_REQUIREMENTS, [plan_id=103]
+      //        +- HashAggregate(keys=[UserId#14, CategoryId#92], functions=[sum(TotalValue#524)]) // GROUPING AND GLOBAL RESULTS OF SUM
+      //          +- Exchange hashpartitioning(UserId#14, CategoryId#92, 200), ENSURE_REQUIREMENTS, [plan_id=100]
+      //            +- HashAggregate(keys=[UserId#14, CategoryId#92], functions=[partial_sum(TotalValue#524)]) // GROUPING AND PARTIAL (LOCAL) RESULTS OF SUM
+      //              +- Project [UserId#14, TotalValue#524, CategoryId#92]
+      //                +- SortMergeJoin [ProductId#488], [ProductId#84], LeftOuter // MAIN JOIN
+      //                :- Sort [ProductId#488 ASC NULLS FIRST], false, 0 // PREPARATION FOR MAIN JOIN
+      //                :  +- Exchange hashpartitioning(ProductId#488, 200), ENSURE_REQUIREMENTS, [plan_id=92]
+      //                :     +- Project [UserId#14, ProductId#488, TotalValue#524]
+      //                :        +- SortMergeJoin [UserId#14], [UserId#476], LeftOuter // JOIN OF ORDERS WITH USERS
+      //                :           :- Sort [UserId#14 ASC NULLS FIRST], false, 0  // PREPARATION FOR JOIN OF ORDERS WITH USERS
+      //                :           :  +- Exchange hashpartitioning(UserId#14, 200), REPARTITION_BY_COL, [plan_id=59] // REPARTITION USERS BY USER ID
+      //                :           :     +- LocalTableScan [UserId#14] // LOAD USERS
+      //                :           +- Sort [UserId#476 ASC NULLS FIRST], false, 0 // PREPARATION FOR JOIN OF ORDERS WITH USERS
+      //                :              +- Exchange hashpartitioning(UserId#476, 200), ENSURE_REQUIREMENTS, [plan_id=80]
+      //                :                 +- Union // DO UNION OF ORDERS
+      //                :                    :- Exchange hashpartitioning(UserId#476, 200), REPARTITION_BY_COL, [plan_id=61] // REPARTITION ORDERS BY USER ID
+      //                :                    :  +- LocalTableScan [UserId#476, ProductId#488, TotalValue#524] // LOAD ORDERS
+      //                :                    +- Exchange hashpartitioning(UserId#322, 200), REPARTITION_BY_COL, [plan_id=63] // REPARTITION ORDERS BY USER ID
+      //                :                       +- LocalTableScan [UserId#322, ProductId#334, TotalValue#370] // LOAD ORDERS
+      //                +- Sort [ProductId#84 ASC NULLS FIRST], false, 0 // PREPARATION FOR MAIN JOIN
+      //                  +- Exchange hashpartitioning(ProductId#84, 200), ENSURE_REQUIREMENTS, [plan_id=93]
+      //                    +- Project [ProductId#84, CategoryId#92]
+      //                      +- SortMergeJoin [CategoryId#92], [CategoryId#148], LeftOuter // JOIN OF PRODUCTS WITH CATEGORIES
+      //                        :- Sort [CategoryId#92 ASC NULLS FIRST], false, 0 // PREPARATION FOR JOIN OF PRODUCTS WITH CATEGORIES
+      //                        :  +- Exchange hashpartitioning(CategoryId#92, 200), REPARTITION_BY_COL, [plan_id=68] // REPARTITION PRODUCTS BY CATEGORY ID
+      //                        :     +- LocalTableScan [ProductId#84, CategoryId#92] // LOAD PRODUCTS
+      //                        +- Sort [CategoryId#148 ASC NULLS FIRST], false, 0
+      //                           +- Exchange hashpartitioning(CategoryId#148, 200), REPARTITION_BY_COL, [plan_id=70] // REPARTITION CATEGORIES BY CATEGORY ID
+      //                              +- LocalTableScan [CategoryId#148] // LOAD CATEGORIES
+
+      groupedByUsersAndCategoriesDF.show()
+
+      groupedByUsersAndCategoriesDF
+    }
+
+    val transformationTask2WithRepartitioningApproachDF = transformationTask2WithRepartitioningApproach(
+      notCompletedOrdersDF,
+      completedOrdersDF,
+      notCompletedPaymentsDF,
+      completedPaymentsDF,
+      usersDF,
+      productsDF,
+      categoriesDF
+    )
 
     // Tests.
 
-    spark.stop()
+    // spark.stop()
   }
 }
 
