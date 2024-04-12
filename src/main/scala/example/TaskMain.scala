@@ -16,21 +16,13 @@ object TaskMain {
 
     // CREATE TEST DATAFRAMES
 
-    // STATIC
+    // LOAD TABLES / PARQUET FILES
 
-    val usersDF = TaskData.createSampleUsersDF
-    val productsDF = TaskData.createSampleProductsDF
-    val categoriesDF = TaskData.createSampleCategoriesDF
-    val completedOrdersDF = TaskData.createSampleCompletedOrdersDF
-    val notCompletedOrdersDF = TaskData.createSampleNotCompletedOrdersDF
-
-    // DYNAMIC
-
-    //  val usersDF = TaskData.createDynamicallyGeneratedSampleUsersDF
-    //  val productsDF = TaskData.createDynamicallyGeneratedSampleProductsDF
-    //  val categoriesDF = TaskData.createDynamicallyGeneratedSampleCategoriesDF
-    //  val completedOrdersDF = TaskData.createDynamicallyGeneratedSampleCompletedOrdersDF
-    //  val notCompletedOrdersDF = TaskData.createDynamicallyGeneratedSampleNotCompletedOrdersDF
+    val usersDF = TaskDatabase.loadSampleUsersDF
+    val productsDF = TaskDatabase.loadSampleProductsDF
+    val categoriesDF = TaskDatabase.loadSampleCategoriesDF
+    val completedOrdersDF = TaskDatabase.loadSampleCompletedOrdersDF
+    val notCompletedOrdersDF = TaskDatabase.loadSampleNotCompletedOrdersDF
 
     // SCHEMAS
 

@@ -1,5 +1,5 @@
 import example.Task2SimpleApproachWithComplications.transformationTask2WithSimpleApproachWithComplications
-import example.{TaskData, TaskInitialization}
+import example.{TaskDatabase, TaskInitialization}
 import org.apache.spark.sql.SparkSession
 import org.scalatest.flatspec.AnyFlatSpec
 
@@ -11,11 +11,11 @@ class Task2SimpleApproachWithComplicationsTest extends AnyFlatSpec {
 
     // CREATE TEST DATAFRAMES
 
-    val usersDF = TaskData.createSampleUsersDF
-    val productsDF = TaskData.createSampleProductsDF
-    val categoriesDF = TaskData.createSampleCategoriesDF
-    val completedOrdersDF = TaskData.createSampleCompletedOrdersDF
-    val notCompletedOrdersDF = TaskData.createSampleNotCompletedOrdersDF
+    val usersDF = TaskDatabase.loadSampleUsersDF
+    val productsDF = TaskDatabase.loadSampleProductsDF
+    val categoriesDF = TaskDatabase.loadSampleCategoriesDF
+    val completedOrdersDF = TaskDatabase.loadSampleCompletedOrdersDF
+    val notCompletedOrdersDF = TaskDatabase.loadSampleNotCompletedOrdersDF
 
     // RUN
 

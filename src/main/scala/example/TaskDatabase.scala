@@ -3,6 +3,7 @@ package example
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 
 object TaskDatabase {
+  val DBWAREHOUSE = "spark-warehouse"
   val DATABASE = "db"
 
   val USERS = "users"
@@ -11,9 +12,45 @@ object TaskDatabase {
   val COMPLETED_ORDERS = "completed_orders"
   val NOT_COMPLETED_ORDERS = "not_completed_orders"
 
-  def loadDataFrameFromDatabase(dbName: String, tableName: String)(implicit spark: SparkSession): DataFrame = {
-    spark.read
+  def loadDataFrameFromDatabase(tableName: String, dbName: String = DATABASE)(implicit spark: SparkSession): DataFrame = {
+    spark
+      .read
       .table(dbName + "." + tableName)
+  }
+
+  def loadDataFrameFromParquetFiles(tableName: String, dbWarehousePath: String = DBWAREHOUSE, dbName: String = DATABASE)(implicit spark: SparkSession): DataFrame = {
+    spark
+      .read
+      .parquet(dbWarehousePath + "/" + dbName + "." + dbName + "/" + tableName)
+  }
+
+  def loadSampleUsersDF(implicit spark: SparkSession): DataFrame = {
+    loadDataFrameFromParquetFiles(USERS)
+  }
+
+  def loadSampleCompletedOrdersDF(implicit spark: SparkSession): DataFrame = {
+    loadDataFrameFromParquetFiles(COMPLETED_ORDERS)
+  }
+
+  def loadSampleNotCompletedOrdersDF(implicit spark: SparkSession): DataFrame = {
+    loadDataFrameFromParquetFiles(NOT_COMPLETED_ORDERS)
+  }
+
+  def loadSampleProductsDF(implicit spark: SparkSession): DataFrame = {
+    loadDataFrameFromParquetFiles(PRODUCTS)
+  }
+
+  def loadSampleCategoriesDF(implicit spark: SparkSession): DataFrame = {
+    loadDataFrameFromParquetFiles(CATEGORIES)
+  }
+
+  def loadDataFromTheLocalDatabase(implicit spark: SparkSession): Unit = {
+    // LOAD TEST DATA
+    loadDataFrameFromDatabase(TaskDatabase.USERS).show()
+    loadDataFrameFromDatabase(TaskDatabase.PRODUCTS).show()
+    loadDataFrameFromDatabase(TaskDatabase.CATEGORIES).show()
+    loadDataFrameFromDatabase(TaskDatabase.COMPLETED_ORDERS).show()
+    loadDataFrameFromDatabase(TaskDatabase.NOT_COMPLETED_ORDERS).show()
   }
 
   def createLocalDatabase(dbName: String)(implicit spark: SparkSession): Unit = {
@@ -22,7 +59,8 @@ object TaskDatabase {
   }
 
   def saveDataFrameToTheLocalDatabase(tableName: String, df: DataFrame): Unit = {
-    df.write
+    df
+      .write
       .mode(SaveMode.Overwrite)
       .saveAsTable(tableName)
   }
@@ -34,15 +72,6 @@ object TaskDatabase {
     saveDataFrameToTheLocalDatabase(CATEGORIES, TaskData.createSampleCategoriesDF)
     saveDataFrameToTheLocalDatabase(COMPLETED_ORDERS, TaskData.createSampleCompletedOrdersDF)
     saveDataFrameToTheLocalDatabase(NOT_COMPLETED_ORDERS, TaskData.createSampleNotCompletedOrdersDF)
-  }
-
-  def loadDataFromTheLocalDatabase(implicit spark: SparkSession): Unit = {
-    // LOAD TEST DATA
-    loadDataFrameFromDatabase(TaskDatabase.DATABASE, TaskDatabase.USERS).show()
-    loadDataFrameFromDatabase(TaskDatabase.DATABASE, TaskDatabase.PRODUCTS).show()
-    loadDataFrameFromDatabase(TaskDatabase.DATABASE, TaskDatabase.CATEGORIES).show()
-    loadDataFrameFromDatabase(TaskDatabase.DATABASE, TaskDatabase.COMPLETED_ORDERS).show()
-    loadDataFrameFromDatabase(TaskDatabase.DATABASE, TaskDatabase.NOT_COMPLETED_ORDERS).show()
   }
 
   def main(args: Array[String]): Unit = {
