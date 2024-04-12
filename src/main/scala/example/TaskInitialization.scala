@@ -2,9 +2,17 @@ package example
 
 import org.apache.spark.sql.SparkSession
 
+/** Represents creation of Spark contexts.
+ *
+ */
+
 object TaskInitialization {
   // CREATE SPARK SESSION
 
+  /** Spark session for Production code.
+   *
+   * @return Spark session object.
+   */
   def createSparkSession: SparkSession = {
     SparkSession.builder
       .appName("Spark Scala Task")
@@ -14,6 +22,10 @@ object TaskInitialization {
       .getOrCreate()
   }
 
+  /** Spark session for Test code.
+   *
+   * @return Spark session object.
+   */
   def createLocalSparkSession: SparkSession = {
     SparkSession.builder
       .appName("Spark Scala Task")

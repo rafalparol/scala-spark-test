@@ -3,9 +3,22 @@ package example
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.{asc, desc, sum}
 
+/** Represents an algorithm for Task 2, simple approach.
+ *  QUERY: Find spendings (both already paid or not) of different users on products from different categories.
+ */
+
 object Task2SimpleApproach {
   // QUERY: Find spendings (both already paid or not) of different users on products from different categories.
 
+  /** An algorithm for Task 2, simple approach
+   *
+   * @param notCompletedOrdersDF set of not completed orders
+   * @param completedOrdersDF set of completed orders
+   * @param usersDF set of users
+   * @param productsDF set of products
+   * @param categoriesDF set of categories
+   * @return Spendings (both already paid or not) of different users on products from different categories.
+   */
   def transformationTask2WithSimpleApproach(
     notCompletedOrdersDF: DataFrame,
     completedOrdersDF: DataFrame,

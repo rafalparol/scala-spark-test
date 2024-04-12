@@ -8,6 +8,10 @@ import example.Task2SimpleApproach.transformationTask2WithSimpleApproach
 import example.Task2SimpleApproachWithComplications.transformationTask2WithSimpleApproachWithComplications
 import org.apache.spark.sql.SparkSession
 
+/** Represents main class - for experimenting and Production flow.
+ *
+ */
+
 object TaskMain {
   def main(args: Array[String]): Unit = {
     // CREATE SPARK SESSION

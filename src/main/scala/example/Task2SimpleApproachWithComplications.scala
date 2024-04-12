@@ -1,12 +1,26 @@
 package example
 
 import org.apache.spark.sql.functions.{asc, col, concat, desc, lit, split, sum, to_date, upper}
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.DataFrame
+
+/** Represents an algorithm for Task 2, simple approach with "complications".
+ *  QUERY: Find spendings (both already paid or not) of different users on products from different categories.
+ *         Do not consider orders older than a specific day. Each user ID should be accompanied by first name and last name in uppercase.
+ */
 
 object Task2SimpleApproachWithComplications {
   // QUERY: Find spendings (both already paid or not) of different users on products from different categories.
   //        Do not consider orders older than a specific day. Each user ID should be accompanied by first name and last name in uppercase.
 
+  /** An algorithm for Task 2, simple approach with "complications"
+   *
+   * @param notCompletedOrdersDF set of not completed orders
+   * @param completedOrdersDF set of completed orders
+   * @param usersDF set of users
+   * @param productsDF set of products
+   * @param categoriesDF set of categories
+   * @return Spendings (both already paid or not) of different users on products from different categories. Do not consider orders older than a specific day. Each user ID should be accompanied by first name and last name in uppercase.
+   */
   def transformationTask2WithSimpleApproachWithComplications(
     notCompletedOrdersDF: DataFrame,
     completedOrdersDF: DataFrame,
