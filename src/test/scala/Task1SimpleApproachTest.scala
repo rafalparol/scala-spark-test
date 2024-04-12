@@ -13,8 +13,6 @@ class Task1SimpleApproachTest extends AnyFlatSpec {
     val usersDF = TaskData.createSampleUsersDF(spark)
     val productsDF = TaskData.createSampleProductsDF(spark)
     val categoriesDF = TaskData.createSampleCategoriesDF(spark)
-    val completedPaymentsDF = TaskData.createSampleCompletedPaymentsDF(spark)
-    val notCompletedPaymentsDF = TaskData.createSampleNotCompletedPaymentsDF(spark)
     val completedOrdersDF = TaskData.createSampleCompletedOrdersDF(spark)
     val notCompletedOrdersDF = TaskData.createSampleNotCompletedOrdersDF(spark)
 
