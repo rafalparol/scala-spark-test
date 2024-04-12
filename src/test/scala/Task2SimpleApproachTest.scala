@@ -38,27 +38,10 @@ class Task2SimpleApproachTest extends AnyFlatSpec {
     //  |         user-03|    ultra-laptops-01|   200.0|
     //  +----------------+--------------------+--------+
 
-    val results = transformationTask2WithSimpleApproachDF.collectAsList()
+    val obtainedResults = transformationTask2WithSimpleApproachDF
+    val expectedResults = TestUtils.getBasicQueryExpectedResult(spark)
 
-    assert(results.size() == 5)
-
-    assert(results.get(0).getString(0) == "user-01")
-    assert(results.get(1).getString(0) == "user-02")
-    assert(results.get(2).getString(0) == "user-02")
-    assert(results.get(3).getString(0) == "user-03")
-    assert(results.get(4).getString(0) == "user-03")
-
-    assert(results.get(0).getString(1) == "office-laptops-01")
-    assert(results.get(1).getString(1) == "regular-laptops-01")
-    assert(results.get(2).getString(1) == "premium-laptops-01")
-    assert(results.get(3).getString(1) == "super-laptops-01")
-    assert(results.get(4).getString(1) == "ultra-laptops-01")
-
-    assert(results.get(0).getDouble(2) == 600.0)
-    assert(results.get(1).getDouble(2) == 400.0)
-    assert(results.get(2).getDouble(2) == 350.0)
-    assert(results.get(3).getDouble(2) == 300.0)
-    assert(results.get(4).getDouble(2) == 200.0)
+    assert(TestUtils.areDataFrameEquals(obtainedResults, expectedResults))
 
     // CLEANUP
 

@@ -38,29 +38,10 @@ class Task2SimpleApproachWithComplicationsTest extends AnyFlatSpec {
     //  |         user-03|              STEPHANE MOREAU|    ultra-laptops-01|   200.0|
     //  +----------------+-----------------------------+--------------------+--------+
 
-    val results = transformationTask2WithSimpleApproachWithComplicationsDF.collectAsList()
+    val obtainedResults = transformationTask2WithSimpleApproachWithComplicationsDF
+    val expectedResults = TestUtils.getComplicatedQueryExpectedResult(spark)
 
-    assert(results.size() == 4)
-
-    assert(results.get(0).getString(0) == "user-01")
-    assert(results.get(1).getString(0) == "user-02")
-    assert(results.get(2).getString(0) == "user-03")
-    assert(results.get(3).getString(0) == "user-03")
-
-    assert(results.get(0).getString(1) == "ANNE ANDERSON")
-    assert(results.get(1).getString(1) == "TOMMY HARADA")
-    assert(results.get(2).getString(1) == "STEPHANE MOREAU")
-    assert(results.get(3).getString(1) == "STEPHANE MOREAU")
-
-    assert(results.get(0).getString(2) == "office-laptops-01")
-    assert(results.get(1).getString(2) == "premium-laptops-01")
-    assert(results.get(2).getString(2) == "super-laptops-01")
-    assert(results.get(3).getString(2) == "ultra-laptops-01")
-
-    assert(results.get(0).getDouble(3) == 500.0)
-    assert(results.get(1).getDouble(3) == 350.0)
-    assert(results.get(2).getDouble(3) == 300.0)
-    assert(results.get(3).getDouble(3) == 200.0)
+    assert(TestUtils.areDataFrameEquals(obtainedResults, expectedResults))
 
     // CLEANUP
 
