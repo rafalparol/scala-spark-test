@@ -6,21 +6,21 @@ object TaskInitialization {
   // CREATE SPARK SESSION
 
   def createSparkSession: SparkSession = {
-    val ss = SparkSession.builder
+    SparkSession.builder
       .appName("Spark Scala Task")
-      .master("local[*]")
+   // .master("local[*]")
+      .config("spark.sql.session.timeZone", "UTC")
+   // .config("spark.sql.autoBroadcastJoinThreshold", -1)
       .getOrCreate()
- // ss.conf.set("spark.sql.autoBroadcastJoinThreshold", -1)
-    ss.conf.set("spark.sql.session.timeZone", "UTC")
-    ss
   }
 
   def createLocalSparkSession: SparkSession = {
-    val ss = SparkSession.builder
+    SparkSession.builder
       .appName("Spark Scala Task")
       .master("local[*]")
+   // .config("spark.sql.warehouse.dir", "spark-warehouse")
+   // .config("spark.sql.legacy.allowCreatingManagedTableUsingNonemptyLocation", "true")
+      .config("spark.sql.session.timeZone", "UTC")
       .getOrCreate()
-    ss.conf.set("spark.sql.session.timeZone", "UTC")
-    ss
   }
 }
