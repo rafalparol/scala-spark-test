@@ -6,12 +6,13 @@ object Task1SimpleApproach {
   // QUERY: Find spendings (both already paid or not) of different users on products from different categories.
 
   def transformationTask1WithSimpleApproach(
-    spark: SparkSession,
     notCompletedOrdersDF: DataFrame,
     completedOrdersDF: DataFrame,
     usersDF: DataFrame,
     productsDF: DataFrame,
     categoriesDF: DataFrame
+  )(
+    implicit spark: SparkSession,
   ): DataFrame = {
     usersDF
       .createOrReplaceTempView("users")

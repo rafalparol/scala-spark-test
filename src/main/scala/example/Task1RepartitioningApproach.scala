@@ -7,12 +7,13 @@ object Task1RepartitioningApproach {
   // QUERY: Find spendings (both already paid or not) of different users on products from different categories.
 
   def transformationTask1WithRepartitioningApproach(
-      spark: SparkSession,
       notCompletedOrdersDF: DataFrame,
       completedOrdersDF: DataFrame,
       usersDF: DataFrame,
       productsDF: DataFrame,
       categoriesDF: DataFrame
+    )(
+      implicit spark: SparkSession
     ): DataFrame = {
     usersDF
       .repartition(col("UserId"))

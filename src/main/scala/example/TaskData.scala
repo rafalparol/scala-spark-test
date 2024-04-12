@@ -116,7 +116,7 @@ object TaskData {
 
   // CREATE DYNAMICALLY GENERATED DATAFRAMES
 
-  def createDynamicallyGeneratedSampleUsersDF(spark: SparkSession): DataFrame = {
+  def createDynamicallyGeneratedSampleUsersDF(implicit spark: SparkSession): DataFrame = {
     spark.createDataFrame(createDynamicallyGeneratedSampleUsers(USERS_COUNT))
       .withColumnRenamed("_1", "UserId")
       .withColumnRenamed("_2", "FirstName")
@@ -127,7 +127,7 @@ object TaskData {
       .withColumnRenamed("_7", "Address")
   }
 
-  def createDynamicallyGeneratedSampleCompletedOrdersDF(spark: SparkSession): DataFrame = {
+  def createDynamicallyGeneratedSampleCompletedOrdersDF(implicit spark: SparkSession): DataFrame = {
     spark.createDataFrame(createDynamicallyGeneratedSampleCompletedOrders(COMPLETED_ORDERS_COUNT))
       .withColumnRenamed("_1", "OrderId")
       .withColumnRenamed("_2", "PaymentId")
@@ -142,7 +142,7 @@ object TaskData {
       .withColumnRenamed("_11", "Status")
   }
 
-  def createDynamicallyGeneratedSampleNotCompletedOrdersDF(spark: SparkSession): DataFrame = {
+  def createDynamicallyGeneratedSampleNotCompletedOrdersDF(implicit spark: SparkSession): DataFrame = {
     spark.createDataFrame(createDynamicallyGeneratedSampleNotCompletedOrders(NOT_COMPLETED_ORDERS_COUNT))
       .withColumnRenamed("_1", "OrderId")
       .withColumnRenamed("_2", "PaymentId")
@@ -157,7 +157,7 @@ object TaskData {
       .withColumnRenamed("_11", "Status")
   }
 
-  def createDynamicallyGeneratedSampleProductsDF(spark: SparkSession): DataFrame = {
+  def createDynamicallyGeneratedSampleProductsDF(implicit spark: SparkSession): DataFrame = {
     spark.createDataFrame(createDynamicallyGeneratedSampleProducts(PRODUCTS_COUNT))
       .withColumnRenamed("_1", "ProductId")
       .withColumnRenamed("_2", "CategoryId")
@@ -168,7 +168,7 @@ object TaskData {
       .withColumnRenamed("_7", "MarketEntranceDate")
   }
 
-  def createDynamicallyGeneratedSampleCategoriesDF(spark: SparkSession): DataFrame = {
+  def createDynamicallyGeneratedSampleCategoriesDF(implicit spark: SparkSession): DataFrame = {
     spark.createDataFrame(createDynamicallyGeneratedSampleCategories(CATEGORIES_COUNT))
       .withColumnRenamed("_1", "CategoryId")
       .withColumnRenamed("_2", "Name")
@@ -178,7 +178,7 @@ object TaskData {
 
   // CREATE STATICALLY GENERATED DATAFRAMES
 
-  def createSampleUsersDF(spark: SparkSession): DataFrame = {
+  def createSampleUsersDF(implicit spark: SparkSession): DataFrame = {
     spark.createDataFrame(createSampleUsers)
       .withColumnRenamed("_1", "UserId")
       .withColumnRenamed("_2", "FirstName")
@@ -189,7 +189,7 @@ object TaskData {
       .withColumnRenamed("_7", "Address")
   }
 
-  def createSampleCompletedOrdersDF(spark: SparkSession): DataFrame = {
+  def createSampleCompletedOrdersDF(implicit spark: SparkSession): DataFrame = {
     spark.createDataFrame(createSampleCompletedOrders)
       .withColumnRenamed("_1", "OrderId")
       .withColumnRenamed("_2", "PaymentId")
@@ -204,7 +204,7 @@ object TaskData {
       .withColumnRenamed("_11", "Status")
   }
 
-  def createSampleNotCompletedOrdersDF(spark: SparkSession): DataFrame = {
+  def createSampleNotCompletedOrdersDF(implicit spark: SparkSession): DataFrame = {
     spark.createDataFrame(createSampleNotCompletedOrders)
       .withColumnRenamed("_1", "OrderId")
       .withColumnRenamed("_2", "PaymentId")
@@ -219,7 +219,7 @@ object TaskData {
       .withColumnRenamed("_11", "Status")
   }
 
-  def createSampleProductsDF(spark: SparkSession): DataFrame = {
+  def createSampleProductsDF(implicit spark: SparkSession): DataFrame = {
     spark.createDataFrame(createSampleProducts)
       .withColumnRenamed("_1", "ProductId")
       .withColumnRenamed("_2", "CategoryId")
@@ -230,7 +230,7 @@ object TaskData {
       .withColumnRenamed("_7", "MarketEntranceDate")
   }
 
-  def createSampleCategoriesDF(spark: SparkSession): DataFrame = {
+  def createSampleCategoriesDF(implicit spark: SparkSession): DataFrame = {
     spark.createDataFrame(createSampleCategories)
       .withColumnRenamed("_1", "CategoryId")
       .withColumnRenamed("_2", "Name")
@@ -238,7 +238,7 @@ object TaskData {
       .withColumnRenamed("_4", "Country")
   }
 
-  def createSampleCompletedPaymentsDF(spark: SparkSession): DataFrame = {
+  def createSampleCompletedPaymentsDF(implicit spark: SparkSession): DataFrame = {
     spark.createDataFrame(createSampleCompletedPayments)
       .withColumnRenamed("_1", "PaymentId")
       .withColumnRenamed("_2", "Country")
@@ -248,7 +248,7 @@ object TaskData {
       .withColumnRenamed("_6", "PaymentStatus")
   }
 
-  def createSampleNotCompletedPaymentsDF(spark: SparkSession): DataFrame = {
+  def createSampleNotCompletedPaymentsDF(implicit spark: SparkSession): DataFrame = {
     spark.createDataFrame(createSampleNotCompletedPayments)
       .withColumnRenamed("_1", "PaymentId")
       .withColumnRenamed("_2", "Country")

@@ -1,25 +1,25 @@
 import example.Task1SimpleApproach.transformationTask1WithSimpleApproach
 import example.{TaskData, TaskInitialization}
+import org.apache.spark.sql.SparkSession
 import org.scalatest.flatspec.AnyFlatSpec
 
 class Task1SimpleApproachTest extends AnyFlatSpec {
   "Task1SimpleApproach" should "returns correct DataFrame" in {
     // CREATE SPARK SESSION
 
-    val spark = TaskInitialization.createLocalSparkSession
+    implicit val spark: SparkSession = TaskInitialization.createLocalSparkSession
 
     // CREATE TEST DATAFRAMES
 
-    val usersDF = TaskData.createSampleUsersDF(spark)
-    val productsDF = TaskData.createSampleProductsDF(spark)
-    val categoriesDF = TaskData.createSampleCategoriesDF(spark)
-    val completedOrdersDF = TaskData.createSampleCompletedOrdersDF(spark)
-    val notCompletedOrdersDF = TaskData.createSampleNotCompletedOrdersDF(spark)
+    val usersDF = TaskData.createSampleUsersDF
+    val productsDF = TaskData.createSampleProductsDF
+    val categoriesDF = TaskData.createSampleCategoriesDF
+    val completedOrdersDF = TaskData.createSampleCompletedOrdersDF
+    val notCompletedOrdersDF = TaskData.createSampleNotCompletedOrdersDF
 
     // RUN
 
     val transformationTask1WithSimpleApproachDF = transformationTask1WithSimpleApproach(
-      spark,
       notCompletedOrdersDF,
       completedOrdersDF,
       usersDF,

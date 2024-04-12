@@ -7,13 +7,14 @@ object Task1SimpleApproachWithComplications {
   //        Do not consider orders older than a specific day. Each user ID should be accompanied by first name and last name in uppercase.
 
   def transformationTask1WithSimpleApproachWithComplications(
-    spark: SparkSession,
     notCompletedOrdersDF: DataFrame,
     completedOrdersDF: DataFrame,
     usersDF: DataFrame,
     productsDF: DataFrame,
     categoriesDF: DataFrame,
     startDate: String
+  )(
+    implicit spark: SparkSession,
   ): DataFrame = {
     usersDF
       .createOrReplaceTempView("users")
