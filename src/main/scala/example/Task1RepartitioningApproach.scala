@@ -30,7 +30,16 @@ object Task1RepartitioningApproach {
         .repartition(col("UserId")))
       .createOrReplaceTempView("orders")
 
-    val groupedByUsersAndCategoriesDF = spark.sql("SELECT users.UserId AS ConsideredUserId, categories.CategoryId AS ConsideredCategoryId, SUM(orders.TotalValue) AS TotalSum FROM users LEFT JOIN orders ON users.UserId = orders.UserId LEFT JOIN products ON orders.ProductId = products.ProductId LEFT JOIN categories ON products.CategoryId = categories.CategoryId GROUP BY users.UserId, categories.CategoryId ORDER BY ConsideredUserId ASC, TotalSum DESC")
+    val groupedByUsersAndCategoriesDF = spark.sql(
+      """
+        |SELECT users.UserId AS ConsideredUserId, categories.CategoryId AS ConsideredCategoryId, SUM(orders.TotalValue) AS TotalSum
+        |FROM users
+        |LEFT JOIN orders ON users.UserId = orders.UserId
+        |LEFT JOIN products ON orders.ProductId = products.ProductId
+        |LEFT JOIN categories ON products.CategoryId = categories.CategoryId
+        |GROUP BY users.UserId, categories.CategoryId
+        |ORDER BY ConsideredUserId ASC, TotalSum DESC""".stripMargin
+    )
 
     // groupedByUsersAndCategoriesDF.explain()
 

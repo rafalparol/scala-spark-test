@@ -26,8 +26,17 @@ object Task1SimpleApproachWithComplications {
       .union(notCompletedOrdersDF)
       .createOrReplaceTempView("orders")
 
-    val startDateWithQuotationMarks = "\"" + startDate + "\""
-    val groupedByUsersAndCategoriesDF = spark.sql("SELECT users.UserId AS ConsideredUserId, CONCAT(UPPER(users.FirstName), ' ', UPPER(users.LastName)) AS ConsideredFullNameInUpperCase, categories.CategoryId AS ConsideredCategoryId, SUM(orders.TotalValue) AS TotalSum FROM users LEFT JOIN orders ON users.UserId = orders.UserId LEFT JOIN products ON orders.ProductId = products.ProductId LEFT JOIN categories ON products.CategoryId = categories.CategoryId WHERE CAST(SPLIT(orders.OrderGenerationDate, \" \")[0] AS DATE) > " + startDateWithQuotationMarks + " GROUP BY users.UserId, users.FirstName, users.LastName, categories.CategoryId ORDER BY ConsideredUserId ASC, TotalSum DESC")
+    val groupedByUsersAndCategoriesDF = spark.sql(
+      s"""
+        |SELECT users.UserId AS ConsideredUserId, CONCAT(UPPER(users.FirstName), ' ', UPPER(users.LastName)) AS ConsideredFullNameInUpperCase, categories.CategoryId AS ConsideredCategoryId, SUM(orders.TotalValue) AS TotalSum
+        |FROM users
+        |LEFT JOIN orders ON users.UserId = orders.UserId
+        |LEFT JOIN products ON orders.ProductId = products.ProductId
+        |LEFT JOIN categories ON products.CategoryId = categories.CategoryId
+        |WHERE CAST(SPLIT(orders.OrderGenerationDate, \" \")[0] AS DATE) > \"$startDate\"
+        |GROUP BY users.UserId, users.FirstName, users.LastName, categories.CategoryId
+        |ORDER BY ConsideredUserId ASC, TotalSum DESC""".stripMargin
+    )
 
     // groupedByUsersAndCategoriesDF.explain()
 
