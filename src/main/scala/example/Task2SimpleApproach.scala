@@ -1,34 +1,37 @@
 package example
 
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.{asc, desc, sum}
+
+/** Represents an algorithm for Task 2, simple approach.
+ *  QUERY: Find spendings (both already paid or not) of different users on products from different categories.
+ */
 
 object Task2SimpleApproach {
   // QUERY: Find spendings (both already paid or not) of different users on products from different categories.
 
+  /** An algorithm for Task 2, simple approach
+   *
+   * @param notCompletedOrdersDF set of not completed orders
+   * @param completedOrdersDF set of completed orders
+   * @param usersDF set of users
+   * @param productsDF set of products
+   * @param categoriesDF set of categories
+   * @return Spendings (both already paid or not) of different users on products from different categories.
+   */
   def transformationTask2WithSimpleApproach(
-    spark: SparkSession,
     notCompletedOrdersDF: DataFrame,
     completedOrdersDF: DataFrame,
-    notCompletedPaymentsDF: DataFrame,
-    completedPaymentsDF: DataFrame,
     usersDF: DataFrame,
     productsDF: DataFrame,
     categoriesDF: DataFrame
   ): DataFrame = {
     val ordersDF = notCompletedOrdersDF
       .union(completedOrdersDF)
-    // ordersDF.printSchema()
-    // val paymentsDF = notCompletedPaymentsDF
-    //   .union(completedPaymentsDF)
-    // paymentsDF.printSchema()
 
     val usersJoinedWithOrdersDF = usersDF.join(ordersDF, usersDF.col("UserId") === ordersDF.col("UserId"), "left")
-    // usersJoinedWithOrdersDF.printSchema()
     val usersJoinedWithOrdersAndProductsDF = usersJoinedWithOrdersDF.join(productsDF, ordersDF.col("ProductId") === productsDF.col("ProductId"), "left")
-    // usersJoinedWithOrdersAndProductsDF.printSchema()
     val usersJoinedWithOrdersProductsAndCategoriesDF = usersJoinedWithOrdersAndProductsDF.join(categoriesDF, productsDF.col("CategoryId") === categoriesDF.col("CategoryId"), "left")
-    // usersJoinedWithOrdersProductsAndCategoriesDF.printSchema()
 
     val groupedByUsersAndCategoriesDF = usersJoinedWithOrdersProductsAndCategoriesDF
       .groupBy(
@@ -101,30 +104,6 @@ object Task2SimpleApproach {
     //                  +- Sort [CategoryId#148 ASC NULLS FIRST], false, 0 // PREPARATION FOR JOIN OF USERS ORDERS PRODUCTS AND CATEGORIES
     //                    +- Exchange hashpartitioning(CategoryId#148, 200), ENSURE_REQUIREMENTS, [plan_id=77]
     //                      +- LocalTableScan [CategoryId#148] // LOAD CATEGORIES
-
-    // groupedByUsersAndCategoriesDF.show()
-
-    // WITHOUT "COMPLICATIONS"
-    // PERFORMANCE TEST
-
-    //  val COMPLETED_ORDERS_COUNT = 50000
-    //  val NOT_COMPLETED_ORDERS_COUNT = 50000
-    //  val USERS_COUNT = 10000
-    //  val INSTANCES_COUNT = 5
-    //  val COUNTRIES_COUNT = 10
-    //  val MANUFACTURERS_COUNT = 20
-    //  val PRODUCTS_COUNT = 1000
-    //  val CATEGORIES_COUNT = 100
-    //
-    //  val PRICE_INTERVAL = 100
-    //  val MAX_PRICE = 500
-    //
-    //  val WEIGHT_INTERVAL = 20
-    //  val MAX_WEIGHT = 100
-    //
-    //  val MAX_DAYS = 28
-
-    // Around 6s, not worse than without the repartitioning.
 
     groupedByUsersAndCategoriesDF
   }

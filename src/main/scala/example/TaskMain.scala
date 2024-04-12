@@ -8,31 +8,27 @@ import example.Task2SimpleApproach.transformationTask2WithSimpleApproach
 import example.Task2SimpleApproachWithComplications.transformationTask2WithSimpleApproachWithComplications
 import org.apache.spark.sql.SparkSession
 
+/** Represents main class - for experimenting and Production flow.
+ *
+ */
+
 object TaskMain {
   def main(args: Array[String]): Unit = {
     // CREATE SPARK SESSION
 
-    val spark = TaskInitialization.createLocalSparkSession
+    implicit val spark: SparkSession = TaskInitialization.createSparkSession
 
     // CREATE TEST DATAFRAMES
 
-    // STATIC
+    // LOAD TABLES / PARQUET FILES
 
-    //  val usersDF = TaskData.createSampleUsersDF(spark)
-    //  val productsDF = TaskData.createSampleProductsDF(spark)
-    //  val categoriesDF = TaskData.createSampleCategoriesDF(spark)
-    //  val completedPaymentsDF = TaskData.createSampleCompletedPaymentsDF(spark)
-    //  val notCompletedPaymentsDF = TaskData.createSampleNotCompletedPaymentsDF(spark)
-    //  val completedOrdersDF = TaskData.createSampleCompletedOrdersDF(spark)
-    //  val notCompletedOrdersDF = TaskData.createSampleNotCompletedOrdersDF(spark)
+    val usersDF = TaskDatabase.loadSampleUsersDF
+    val productsDF = TaskDatabase.loadSampleProductsDF
+    val categoriesDF = TaskDatabase.loadSampleCategoriesDF
+    val completedOrdersDF = TaskDatabase.loadSampleCompletedOrdersDF
+    val notCompletedOrdersDF = TaskDatabase.loadSampleNotCompletedOrdersDF
 
-    // DYNAMIC
-
-    //  val usersDF = TaskData.createDynamicallyGeneratedSampleUsersDF(spark)
-    //  val productsDF = TaskData.createDynamicallyGeneratedSampleProductsDF(spark)
-    //  val categoriesDF = TaskData.createDynamicallyGeneratedSampleCategoriesDF(spark)
-    //  val completedOrdersDF = TaskData.createDynamicallyGeneratedSampleCompletedOrdersDF(spark)
-    //  val notCompletedOrdersDF = TaskData.createDynamicallyGeneratedSampleNotCompletedOrdersDF(spark)
+    // SCHEMAS
 
     // usersDF.printSchema()
     // productsDF.printSchema()
@@ -42,97 +38,83 @@ object TaskMain {
     // completedOrdersDF.printSchema()
     // notCompletedOrdersDF.printSchema()
 
-    //  val transformationTask1WithSimpleApproachDF = transformationTask1WithSimpleApproach(
-    //    spark,
-    //    notCompletedOrdersDF,
-    //    completedOrdersDF,
-    //    notCompletedPaymentsDF,
-    //    completedPaymentsDF,
-    //    usersDF,
-    //    productsDF,
-    //    categoriesDF
-    //  )
+    // TASK 1
 
-    // transformationTask1WithSimpleApproachDF.show()
+    // Simple approach.
+
+    val transformationTask1WithSimpleApproachDF = transformationTask1WithSimpleApproach(
+      notCompletedOrdersDF,
+      completedOrdersDF,
+      usersDF,
+      productsDF,
+      categoriesDF
+    )
+
+    transformationTask1WithSimpleApproachDF.show()
 
     // Approach with repartitioning.
 
-    //  val transformationTask1WithRepartitioningApproachDF = transformationTask1WithRepartitioningApproach(
-    //    spark,
-    //    notCompletedOrdersDF,
-    //    completedOrdersDF,
-    //    notCompletedPaymentsDF,
-    //    completedPaymentsDF,
-    //    usersDF,
-    //    productsDF,
-    //    categoriesDF
-    //  )
+    val transformationTask1WithRepartitioningApproachDF = transformationTask1WithRepartitioningApproach(
+      notCompletedOrdersDF,
+      completedOrdersDF,
+      usersDF,
+      productsDF,
+      categoriesDF
+    )
 
-    // transformationTask1WithRepartitioningApproachDF.show()
+    transformationTask1WithRepartitioningApproachDF.show()
 
-    // Simple approach with "complications"
+    // Simple approach with "complications".
 
-    //  val transformationTask1WithSimpleApproachWithComplicationsDF = transformationTask1WithSimpleApproachWithComplications(
-    //    spark,
-    //    notCompletedOrdersDF,
-    //    completedOrdersDF,
-    //    null,
-    //    null,
-    //    usersDF,
-    //    productsDF,
-    //    categoriesDF,
-    //   "2023-03-01"
-    //  )
-    //
-    //  transformationTask1WithSimpleApproachWithComplicationsDF.show()
+    val transformationTask1WithSimpleApproachWithComplicationsDF = transformationTask1WithSimpleApproachWithComplications(
+      notCompletedOrdersDF,
+      completedOrdersDF,
+      usersDF,
+      productsDF,
+      categoriesDF,
+     "2023-03-01"
+    )
+
+    transformationTask1WithSimpleApproachWithComplicationsDF.show()
 
     // TASK 2
 
-    // Simple approach
+    // Simple approach.
 
-    //  val transformationTask2WithSimpleApproachDF = transformationTask2WithSimpleApproach(
-    //    spark,
-    //    notCompletedOrdersDF,
-    //    completedOrdersDF,
-    //    null,
-    //    null,
-    //    usersDF,
-    //    productsDF,
-    //    categoriesDF
-    //  )
-    //
-    //  transformationTask2WithSimpleApproachDF.show()
+    val transformationTask2WithSimpleApproachDF = transformationTask2WithSimpleApproach(
+      notCompletedOrdersDF,
+      completedOrdersDF,
+      usersDF,
+      productsDF,
+      categoriesDF
+    )
+
+    transformationTask2WithSimpleApproachDF.show()
 
     // Approach with repartitioning.
 
-    //  val transformationTask2WithRepartitioningApproachDF = transformationTask2WithRepartitioningApproach(
-    //    spark,
-    //    notCompletedOrdersDF,
-    //    completedOrdersDF,
-    //    null,
-    //    null,
-    //    usersDF,
-    //    productsDF,
-    //    categoriesDF
-    //  )
-    //
-    //  transformationTask2WithRepartitioningApproachDF.show()
+    val transformationTask2WithRepartitioningApproachDF = transformationTask2WithRepartitioningApproach(
+      notCompletedOrdersDF,
+      completedOrdersDF,
+      usersDF,
+      productsDF,
+      categoriesDF
+    )
 
-    // Simple approach with "complications"
+    transformationTask2WithRepartitioningApproachDF.show()
 
-    //  val transformationTask2WithSimpleApproachWithComplicationsDF = transformationTask2WithSimpleApproachWithComplications(
-    //    spark,
-    //    notCompletedOrdersDF,
-    //    completedOrdersDF,
-    //    null,
-    //    null,
-    //    usersDF,
-    //    productsDF,
-    //    categoriesDF,
-    //    "2023-03-01"
-    //  )
+    // Simple approach with "complications".
 
-    // transformationTask2WithSimpleApproachWithComplicationsDF.show()
+    val transformationTask2WithSimpleApproachWithComplicationsDF = transformationTask2WithSimpleApproachWithComplications(
+      notCompletedOrdersDF,
+      completedOrdersDF,
+      usersDF,
+      productsDF,
+      categoriesDF,
+      "2023-03-01"
+    )
+
+    transformationTask2WithSimpleApproachWithComplicationsDF.show()
 
     spark.stop()
   }

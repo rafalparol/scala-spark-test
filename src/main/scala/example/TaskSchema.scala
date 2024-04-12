@@ -2,6 +2,10 @@ package example
 
 import org.apache.spark.sql.types.{DoubleType, LongType, StringType, StructField, StructType}
 
+/** Represents all the schemas - for documentation purposes.
+ *
+ */
+
 object TaskSchema {
   // CREATE SCHEMAS (FOR DOCUMENTATION PURPOSES ONLY)
 

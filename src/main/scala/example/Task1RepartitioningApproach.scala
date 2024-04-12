@@ -3,18 +3,30 @@ package example
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.col
 
+/** Represents an algorithm for Task 1, repartition-based approach.
+ *  QUERY: Find spendings (both already paid or not) of different users on products from different categories.
+ */
+
 object Task1RepartitioningApproach {
   // QUERY: Find spendings (both already paid or not) of different users on products from different categories.
 
+  /** An algorithm for Task 1, repartition-based approach
+   *
+   * @param notCompletedOrdersDF set of not completed orders
+   * @param completedOrdersDF set of completed orders
+   * @param usersDF set of users
+   * @param productsDF set of products
+   * @param categoriesDF set of categories
+   * @return Spendings (both already paid or not) of different users on products from different categories.
+   */
   def transformationTask1WithRepartitioningApproach(
-      spark: SparkSession,
       notCompletedOrdersDF: DataFrame,
       completedOrdersDF: DataFrame,
-      notCompletedPaymentsDF: DataFrame,
-      completedPaymentsDF: DataFrame,
       usersDF: DataFrame,
       productsDF: DataFrame,
       categoriesDF: DataFrame
+    )(
+      implicit spark: SparkSession
     ): DataFrame = {
     usersDF
       .repartition(col("UserId"))
@@ -25,21 +37,23 @@ object Task1RepartitioningApproach {
     categoriesDF
       .repartition(col("CategoryId"))
       .createOrReplaceTempView("categories")
-//  completedPaymentsDF
-//    .createOrReplaceTempView("completed_payments")
-//  notCompletedPaymentsDF
-//    .createOrReplaceTempView("not_completed_payments")
-//  completedOrdersDF
-//    .createOrReplaceTempView("completed_orders")
-//  notCompletedOrdersDF
-//    .createOrReplaceTempView("not_completed_orders")
+
     completedOrdersDF
       .repartition(col("UserId"))
       .union(notCompletedOrdersDF
         .repartition(col("UserId")))
       .createOrReplaceTempView("orders")
 
-    val groupedByUsersAndCategoriesDF = spark.sql("SELECT users.UserId AS ConsideredUserId, categories.CategoryId AS ConsideredCategoryId, SUM(orders.TotalValue) AS TotalSum FROM users LEFT JOIN orders ON users.UserId = orders.UserId LEFT JOIN products ON orders.ProductId = products.ProductId LEFT JOIN categories ON products.CategoryId = categories.CategoryId GROUP BY users.UserId, categories.CategoryId ORDER BY ConsideredUserId ASC, TotalSum DESC")
+    val groupedByUsersAndCategoriesDF = spark.sql(
+      """
+        |SELECT users.UserId AS ConsideredUserId, categories.CategoryId AS ConsideredCategoryId, SUM(orders.TotalValue) AS TotalSum
+        |FROM users
+        |LEFT JOIN orders ON users.UserId = orders.UserId
+        |LEFT JOIN products ON orders.ProductId = products.ProductId
+        |LEFT JOIN categories ON products.CategoryId = categories.CategoryId
+        |GROUP BY users.UserId, categories.CategoryId
+        |ORDER BY ConsideredUserId ASC, TotalSum DESC""".stripMargin
+    )
 
     // groupedByUsersAndCategoriesDF.explain()
 
@@ -77,8 +91,6 @@ object Task1RepartitioningApproach {
     //            +- Sort [CategoryId#148 ASC NULLS FIRST], false, 0
     //            +- Exchange hashpartitioning(CategoryId#148, 200), REPARTITION_BY_COL, [plan_id=84]
     //            +- LocalTableScan [CategoryId#148]
-
-    // groupedByUsersAndCategoriesDF.show()
 
     groupedByUsersAndCategoriesDF
   }
